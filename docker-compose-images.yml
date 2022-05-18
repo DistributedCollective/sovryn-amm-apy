@@ -1,0 +1,30 @@
+version: '3.4'
+
+services:
+  sov-postgres:
+    image: postgres:10.5-alpine
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=sov-amm-apy
+    expose:
+      - 5432
+    networks:
+      - sovryn
+
+  sovryn-amm-apy:
+    image: sovryn-amm-apy:latest
+    environment:
+      - PORT=3000
+    ports:
+      - "3000:3000"
+    expose:
+      - "3000"
+    networks:
+      - sovryn
+
+networks:
+  sovryn:
+    driver: bridge
+    ipam:
+      driver: default

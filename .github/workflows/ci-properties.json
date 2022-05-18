@@ -1,0 +1,17 @@
+{
+  "app_name": "sovryn-amm-apy",
+  "aws_region": "us-east-2",
+  "k8s_cluster_name": "k8-mainnet",
+  "registry": "docker.io",
+  "image_name": "sovryn/sovryn-amm-apy",
+  "prod_branch": "main",
+  "dev_branch": "development",
+  "dockerfile_path": ".",
+  "APP_ENV_VARS": {
+    "APP_NAME": "sovryn-amm-apy",
+    "LOG_LEVEL": "debug",
+    "PORT": "3000",
+    "POSTGRES_PORT": "5432",
+    "POSTGRES_DB": "sov-amm-apy-main"
+  }
+}
