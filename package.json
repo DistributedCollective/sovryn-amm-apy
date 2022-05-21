@@ -9,14 +9,15 @@
       "clean": "rm -rf ./dist && mkdir dist",
       "dev": "nodemon --config nodemon.json src/server.ts",
       "dev:debug": "nodemon --config nodemon.json --inspect-brk src/server.ts",
-      "test": "jest",
+      "test": "export NODE_TLS_REJECT_UNAUTHORIZED=0 jest",
       "test:watch": "jest --watchAll",
       "lint": "ts-standard",
       "lint:fix": "ts-standard --fix",
       "prepare": "husky install",
       "migrations:generate": "npx ts-node ./node_modules/.bin/typeorm migration:generate -f ./src/config/database.ts",
       "migrations:run": "npx ts-node ./node_modules/.bin/typeorm migration:run -f ./src/config/database.ts",
-      "migrations:revert": "npx ts-node ./node_modules/.bin/typeorm migration:revert -f ./src/config/database.ts"
+      "migrations:revert": "npx ts-node ./node_modules/.bin/typeorm migration:revert -f ./src/config/database.ts",
+      "codegen": "graphql-codegen --config ./codegen.yml"
    },
    "keywords": [
       "Sovryn"
@@ -24,15 +25,27 @@
    "author": "Remy",
    "license": "ISC",
    "dependencies": {
+      "@graphql-codegen/introspection": "^2.1.1",
+      "@graphql-codegen/typescript": "^2.4.11",
+      "@graphql-codegen/typescript-document-nodes": "^2.2.11",
+      "@graphql-codegen/typescript-resolvers": "^2.6.4",
+      "apollo-cache-inmemory": "^1.6.6",
+      "apollo-client": "^2.6.10",
+      "apollo-link-http": "^1.5.17",
       "axios": "^0.21.4",
       "class-validator": "^0.13.2",
       "convict": "^5.2.1",
       "cors": "^2.8.5",
+      "cross-fetch": "^3.1.5",
       "express": "^4.17.3",
       "express-request-id": "^1.4.1",
       "express-validator": "^6.14.0",
+      "graphql": "^16.5.0",
+      "graphql-codegen": "^0.4.0",
+      "graphql-tag": "^2.12.6",
       "helmet": "^4.6.0",
       "lodash": "^4.17.21",
+      "mathjs": "^10.5.3",
       "moment": "^2.29.2",
       "pg": "^8.7.3",
       "pino": "^6.14.0",
@@ -42,7 +55,8 @@
       "regenerator-runtime": "^0.13.7",
       "response-time": "^2.3.2",
       "typeorm": "^0.2.45",
-      "uuid": "^8.3.1"
+      "uuid": "^8.3.1",
+      "web3": "^1.7.3"
    },
    "devDependencies": {
       "@tsconfig/node12": "^1.0.9",

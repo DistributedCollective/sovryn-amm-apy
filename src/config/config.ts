@@ -61,6 +61,26 @@ const config = convict({
     format: String,
     default: 'sov-amm-apy',
     env: 'POSTGRES_DB'
+  },
+  subgraphUrl: {
+    doc: 'Url for deployed subgraph',
+    format: 'url',
+    default:
+      'https://graphql-testing-1953596502.us-east-2.elb.amazonaws.com/subgraphs/name/DistributedCollective/sovryn-subgraph',
+    // "https://subgraph.sovryn.app/subgraphs/name/DistributedCollective/sovryn-subgraph",
+    env: 'SUBGRAPH_URL'
+  },
+  nodeTlsRejectUnauthorised: {
+    doc: 'For using subgraph with an aws domain while syncing',
+    format: Number,
+    default: 0,
+    env: 'NODE_TLS_REJECT_UNAUTHORIZED'
+  },
+  RSKRpc: {
+    doc: 'RSK mainnet endpoint',
+    format: 'url',
+    default: 'https://testnet.sovryn.app/rpc',
+    env: 'RSK_RPC'
   }
 })
 

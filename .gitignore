@@ -29,3 +29,5 @@ tmp/
 temp/
 dist/
 .env
+graphql.schema.json
+generated-schema.ts
