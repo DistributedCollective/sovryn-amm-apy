@@ -1,7 +1,7 @@
-import { ConnectionOptions } from "typeorm";
-import { ApyBlock } from "../entity";
+import { ConnectionOptions } from 'typeorm'
+import { ApyBlock } from '../entity'
 
-import config, { Environment } from "./config";
+import config, { Environment } from './config'
 
 const {
   postgresHost,
@@ -9,23 +9,23 @@ const {
   postgresUser,
   postgresPassword,
   postgresDatabase,
-  env,
-} = config;
+  env
+} = config
 
 const dbConfig: ConnectionOptions = {
-  type: "postgres",
+  type: 'postgres',
   host: postgresHost,
   port: postgresPort,
   username: postgresUser,
   password: postgresPassword,
   database: postgresDatabase,
   entities: [ApyBlock],
-  migrations: ["src/migration/**/*.ts"],
-  logging: ["error", "warn"],
+  migrations: ['src/migration/**/*.ts'],
+  logging: ['error', 'warn'],
   synchronize: env === Environment.Development,
   cli: {
-    migrationsDir: "src/migration",
-  },
-};
+    migrationsDir: 'src/migration'
+  }
+}
 
-export default dbConfig;
+export default dbConfig

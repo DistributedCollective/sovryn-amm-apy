@@ -1,2 +1,2 @@
-import { ApyBlock } from "./ApyBlock";
-export { ApyBlock };
+import { ApyBlock } from './ApyBlock'
+export { ApyBlock }
