@@ -5,48 +5,48 @@ import {
   UpdateDateColumn,
   BaseEntity,
   BeforeUpdate,
-  BeforeInsert
-} from 'typeorm'
+  BeforeInsert,
+} from "typeorm";
 
-import { validateOrReject, ValidationError } from 'class-validator'
+import { validateOrReject, ValidationError } from "class-validator";
 
-import { ValidateError } from '../errorHandlers/baseError'
+import { ValidateError } from "../errorHandlers/baseError";
 
-import log from '../logger'
+import log from "../logger";
 
-const logger = log.logger.child({ module: 'AbstractBaseEntity' })
+const logger = log.logger.child({ module: "AbstractBaseEntity" });
 
 @Entity()
 export class AbstractBaseEntity extends BaseEntity {
-  @PrimaryGeneratedColumn('uuid')
-  id!: number
+  // @PrimaryGeneratedColumn('uuid')
+  // id!: number
 
   @CreateDateColumn()
-  createdAt!: Date
+  createdAt!: Date;
 
   @UpdateDateColumn()
-  updatedAt!: Date
+  updatedAt!: Date;
 
   // HOOKS
   @BeforeInsert()
   @BeforeUpdate()
-  async validate (): Promise<void> {
+  async validate(): Promise<void> {
     try {
-      await validateOrReject(this, { skipMissingProperties: true })
+      await validateOrReject(this, { skipMissingProperties: true });
     } catch (errors) {
-      const errs = errors as ValidationError[]
-      logger.warn(errs)
-      throw new ValidateError(errs)
+      const errs = errors as ValidationError[];
+      logger.warn(errs);
+      throw new ValidateError(errs);
     }
   }
 
-  async validateStrict (): Promise<void> {
+  async validateStrict(): Promise<void> {
     try {
-      await validateOrReject(this, { skipMissingProperties: false })
+      await validateOrReject(this, { skipMissingProperties: false });
     } catch (errors) {
-      const errs = errors as ValidationError[]
-      logger.warn(errs)
-      throw new ValidateError(errs)
+      const errs = errors as ValidationError[];
+      logger.warn(errs);
+      throw new ValidateError(errs);
     }
   }
 }
