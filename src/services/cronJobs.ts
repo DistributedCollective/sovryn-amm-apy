@@ -32,7 +32,7 @@ class AbstractCronJob {
 
 const blockScheduledTask = new AbstractCronJob(
   mainBlockFunction,
-  '*/5 * * * *',
+  '*/1 * * * *',
   'assets scheduled task'
 )
 

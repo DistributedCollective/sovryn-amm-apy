@@ -1,13 +1,3 @@
-/**
- * 1. Get current block
- * 2. Get start block (last recorded db block or config start block)
- * 3. Get liquidityPool data for that block
- * 4. Get conversion data for that block
- * 5. Get allocation point data for that block
- * 6. Parse
- * 7. Add row to database
- */
-
 import { isNil } from 'lodash'
 import { conversionFeesByBlock } from '../queries/conversionFees'
 import { getQuery } from '../utils/apolloClient'
@@ -21,39 +11,50 @@ import { liquidityPoolDataByBlock } from '../queries/liquidityPoolData'
 import { allocationPointsByBlock } from '../queries/allocationPoints'
 import { getBlockTimestamp } from '../utils/getBlockTimestamp'
 import { currentBlock } from '../queries/currentBlock'
-import { ILmApyBlock, createMultipleBlockRows } from '../models/apyBlock.model'
+import {
+  ILmApyBlock,
+  createMultipleBlockRows,
+  getLastSavedBlock
+} from '../models/apyBlock.model'
+import config from '../config/config'
+
+const { errorThreshold, chunkSize } = config
 
 export async function main (): Promise<void> {
-  let startBlock = 275000
+  console.debug('Starting main function')
+  let startBlock = await getLastSavedBlock()
+  let endBlock = await getCurrentBlock()
+  const startTime = new Date().getTime()
 
-  const endBlock = await getCurrentBlock()
-  let complete = false
+  if (isNil(startBlock)) {
+    startBlock = endBlock - chunkSize
+  } else if (endBlock - startBlock > chunkSize) {
+    endBlock = startBlock + chunkSize
+  }
 
-  /** If syncing a large number of blocks, chunk by 5000. TODO: Move chunk size to config */
-  //   if (endBlock - startBlock > 10) {
-  //     endBlock = startBlock + 10;
-  //   }
-
-  while (!complete) {
+  while (startBlock <= endBlock) {
     console.debug('Start block', startBlock)
-    console.debug('End block', endBlock)
-    if (startBlock <= endBlock) {
-      try {
-        const data = await getDataForOneBlock(startBlock)
-        await createMultipleBlockRows(data)
+    let numErrors = 0
+    try {
+      const data = await getDataForOneBlock(startBlock)
+      console.debug('Data parsed', startBlock)
+      const savedBlocks = await createMultipleBlockRows(data)
+      console.debug('Rows created', savedBlocks)
+      startBlock++
+    } catch (e) {
+      console.error(
+        `Error getting LM APY Block data for block : ${startBlock}`,
+        e
+      )
+      numErrors++
+      if (numErrors > errorThreshold) {
         startBlock++
-      } catch (e) {
-        console.error(
-          `Error getting LM APY Block data for block : ${startBlock}`,
-          e
-        )
-        complete = true
       }
-    } else {
-      complete = true
     }
   }
-  console.log('Loop finished', startBlock, endBlock)
+  const endTime = new Date().getTime()
+  const duration = (endTime - startTime) / 1000
+  console.log('Loop finished', startBlock, endBlock, duration)
 }
 
 async function getCurrentBlock (): Promise<number> {
@@ -61,15 +62,15 @@ async function getCurrentBlock (): Promise<number> {
   return data._meta.block.number
 }
 
-/** TODO: Add this function */
-// function getStartBlock() {}
-
 async function getDataForOneBlock (block: number): Promise<ILmApyBlock[]> {
+  console.debug('Get data for one block', block)
   const output: ILmApyBlock[] = []
   const { liquidityPoolData, rewardTokenAddress, rewardTokenPrice } =
     await getLiquidityPoolData(block)
   const conversionData = await getConversionFeeData(block)
+  console.debug('Get rewards data block', block)
   const rewardsData = await getRewardsData(block, rewardTokenPrice)
+  console.debug('Get block timestamp', block)
   const blockTimestamp = await getBlockTimestamp(block)
 
   for (const poolToken in liquidityPoolData) {
@@ -91,7 +92,6 @@ async function getDataForOneBlock (block: number): Promise<ILmApyBlock[]> {
         : '0'
     })
   }
-  //   console.log(output);
   return output
 }
 
@@ -107,6 +107,7 @@ async function getLiquidityPoolData (block: number): Promise<{
   rewardTokenAddress: string
   rewardTokenPrice: string
 }> {
+  console.debug('Get liquidity pool data', block)
   const liquidityPoolData: ILiquidityPoolData = await getQuery(
     liquidityPoolDataByBlock(block)
   )
@@ -171,6 +172,7 @@ interface ConversionFeeData {
 }
 
 async function getConversionFeeData (block: number): Promise<ConversionFeeData> {
+  console.debug('Get conversion fee data', block)
   const conversionFeeData: IGraphConversionFeeData = await getQuery(
     conversionFeesByBlock(block)
   )
@@ -229,4 +231,4 @@ async function getRewardsData (
   return output
 }
 
-// main();
+// createConnection(dbConfig).then(async () => await main())

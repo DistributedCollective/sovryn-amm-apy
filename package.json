@@ -9,7 +9,7 @@
       "clean": "rm -rf ./dist && mkdir dist",
       "dev": "nodemon --config nodemon.json src/server.ts",
       "dev:debug": "nodemon --config nodemon.json --inspect-brk src/server.ts",
-      "test": "export NODE_TLS_REJECT_UNAUTHORIZED=0 jest",
+      "test": "jest",
       "test:watch": "jest --watchAll",
       "lint": "ts-standard",
       "lint:fix": "ts-standard --fix",
