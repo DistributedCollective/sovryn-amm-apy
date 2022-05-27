@@ -47,7 +47,6 @@ export async function getAmmApyAll (days: number = 7): Promise<IAmmApyAll> {
     }
 
     if (!poolExists) {
-      console.debug('POOL DOES NOT EXIST')
       const data: { [key: string]: any[] } = {}
       const balanceHistory = [balanceHistoryItem]
       data[row.poolToken] = [dataItem]
@@ -57,7 +56,6 @@ export async function getAmmApyAll (days: number = 7): Promise<IAmmApyAll> {
         balanceHistory: balanceHistory
       }
     } else if (!poolTokenExists) {
-      console.debug('POOL TOKEN DOES NOT EXIST')
       const pool = output[row.pool]
       pool.data[row.poolToken] = [dataItem]
       const existingBalanceHistory = pool.balanceHistory.findIndex(
@@ -84,6 +82,5 @@ export async function getAmmApyAll (days: number = 7): Promise<IAmmApyAll> {
       }
     }
   }
-  console.log(output, Object.keys(output).length)
   return output
 }

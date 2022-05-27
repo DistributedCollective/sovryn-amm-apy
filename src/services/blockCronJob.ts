@@ -17,11 +17,13 @@ import {
   getLastSavedBlock
 } from '../models/apyBlock.model'
 import config from '../config/config'
+import log from '../logger'
+
+const logger = log.logger.child({ module: 'Apy Block Cronjob' })
 
 const { errorThreshold, chunkSize } = config
 
 export async function main (): Promise<void> {
-  console.debug('Starting main function')
   let startBlock = await getLastSavedBlock()
   let endBlock = await getCurrentBlock()
   const startTime = new Date().getTime()
@@ -33,16 +35,15 @@ export async function main (): Promise<void> {
   }
 
   while (startBlock <= endBlock) {
-    console.debug('Start block', startBlock)
     let numErrors = 0
     try {
+      logger.info('Getting all data for block %s', [startBlock])
       const data = await getDataForOneBlock(startBlock)
-      console.debug('Data parsed', startBlock)
+      logger.info('Creating database rows for block %s', [startBlock])
       await createMultipleBlockRows(data)
-      console.debug('Rows created')
       startBlock++
     } catch (e) {
-      console.error(
+      logger.error(
         `Error getting LM APY Block data for block : ${startBlock}`,
         e
       )
@@ -54,7 +55,7 @@ export async function main (): Promise<void> {
   }
   const endTime = new Date().getTime()
   const duration = (endTime - startTime) / 1000
-  console.log('Loop finished', startBlock, endBlock, duration)
+  logger.debug('Loop finished', startBlock, endBlock, duration)
 }
 
 async function getCurrentBlock (): Promise<number> {
@@ -63,14 +64,15 @@ async function getCurrentBlock (): Promise<number> {
 }
 
 async function getDataForOneBlock (block: number): Promise<ILmApyBlock[]> {
-  console.debug('Get data for one block', block)
-  console.debug('Get block timestamp', block)
+  logger.info('Getting timestamp for block %s', [block])
   const blockTimestamp = await getBlockTimestamp(block)
   const output: ILmApyBlock[] = []
+  logger.info('Getting liquidity pool data for block %s', [block])
   const { liquidityPoolData, rewardTokenAddress, rewardTokenPrice } =
     await getLiquidityPoolData(block)
+  logger.info('Getting conversion fee data for block %s', [block])
   const conversionData = await getConversionFeeData(block)
-  console.debug('Get rewards data block', block)
+  logger.info('Getting rewards data for block %s', [block])
   const rewardsData = await getRewardsData(block, rewardTokenPrice)
 
   for (const poolToken in liquidityPoolData) {
@@ -107,7 +109,6 @@ async function getLiquidityPoolData (block: number): Promise<{
   rewardTokenAddress: string
   rewardTokenPrice: string
 }> {
-  console.debug('Get liquidity pool data', block)
   const liquidityPoolData: ILiquidityPoolData = await getQuery(
     liquidityPoolDataByBlock(block)
   )
@@ -141,13 +142,11 @@ async function getLiquidityPoolData (block: number): Promise<{
           i.underlyingAssets[0].id === item.token0.id &&
           i.underlyingAssets[0].id !== item.smartToken.id
       )?.id
-      console.log('poolToken0', poolToken0)
       const poolToken1 = item.poolTokens.find(
         (i) =>
           i.underlyingAssets[0].id === item.token1.id &&
           i.underlyingAssets[0].id !== item.smartToken.id
       )?.id
-      console.log('poolToken1', poolToken1)
       const btcBalanceToken0 = bignumber(item.token0Balance).mul(
         bignumber(item.token0.lastPriceBtc)
       )
@@ -166,7 +165,6 @@ async function getLiquidityPoolData (block: number): Promise<{
       }
     }
   })
-  console.log(output)
   return {
     liquidityPoolData: output,
     rewardTokenAddress: rewardTokenAddress,
@@ -179,7 +177,6 @@ interface ConversionFeeData {
 }
 
 async function getConversionFeeData (block: number): Promise<ConversionFeeData> {
-  console.debug('Get conversion fee data', block)
   const conversionFeeData: IGraphConversionFeeData = await getQuery(
     conversionFeesByBlock(block)
   )

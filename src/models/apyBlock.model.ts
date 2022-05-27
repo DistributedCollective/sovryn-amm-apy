@@ -124,7 +124,5 @@ export async function getDailyAggregatedApy (): Promise<IDayData[]> {
         .groupBy('date(apy_block.blockTimestamp), apy_block.poolToken')
     }, 's')
     .getRawMany()
-
-  console.log(dayData, dayData.length)
   return dayData as IDayData[]
 }
