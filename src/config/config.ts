@@ -87,6 +87,12 @@ const config = convict({
     format: Number,
     default: 5,
     env: 'ERROR_THRESHOLD'
+  },
+  maxBlockDataRetention: {
+    doc: 'Maximum number of days to keep block by block apy data',
+    format: Number,
+    default: 14,
+    env: 'MAX_BLOCK_DATA_RETENTION'
   }
 })
 

@@ -1,5 +1,5 @@
 import { ConnectionOptions } from 'typeorm'
-import { ApyBlock } from '../entity'
+import { ApyBlock, ApyDay } from '../entity'
 
 import config, { Environment } from './config'
 
@@ -19,7 +19,7 @@ const dbConfig: ConnectionOptions = {
   username: postgresUser,
   password: postgresPassword,
   database: postgresDatabase,
-  entities: [ApyBlock],
+  entities: [ApyBlock, ApyDay],
   migrations: ['src/migration/**/*.ts'],
   logging: ['error', 'warn'],
   synchronize: env === Environment.Development,

@@ -4,11 +4,12 @@
  * rewards, rewardCurrency, rewardsBtc
  */
 
-import { Entity, Column, PrimaryColumn } from 'typeorm'
+import { Entity, Column, PrimaryColumn, Index } from 'typeorm'
 
 import { IsDate, IsEthereumAddress, IsInt, IsNumber } from 'class-validator'
 
 import { AbstractBaseEntity } from './AbstractBase.entity'
+
 @Entity()
 export class ApyBlock extends AbstractBaseEntity {
   @PrimaryColumn()
@@ -20,6 +21,7 @@ export class ApyBlock extends AbstractBaseEntity {
   block!: number
 
   @Column()
+  @Index()
   @IsDate()
   blockTimestamp!: Date
 

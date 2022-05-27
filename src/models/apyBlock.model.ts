@@ -73,7 +73,7 @@ export async function getLastSavedBlock (): Promise<number | null> {
     take: 1
   })
   if (!isNil(row[0])) {
-    return row[0].block
+    return row[0].block + 1
   } else {
     return null
   }
@@ -81,7 +81,7 @@ export async function getLastSavedBlock (): Promise<number | null> {
 
 export interface IDayData {
   pool: string
-  poolToken: string
+  pool_token: string
   date: Date
   balance: string
   fees_percent: string
@@ -92,6 +92,7 @@ export interface IDayData {
 }
 
 export async function getDailyAggregatedApy (): Promise<IDayData[]> {
+  const today = new Date().toISOString().slice(0, 10)
   const connection = getConnectionManager().get('default')
   const dayData = await connection
     .createQueryBuilder()
@@ -109,7 +110,7 @@ export async function getDailyAggregatedApy (): Promise<IDayData[]> {
     .from((subQuery) => {
       return subQuery
         .select([
-          'pool AS pool',
+          "string_agg(distinct pool, ',') AS pool",
           'apy_block.poolToken AS poolToken',
           'date(apy_block.blockTimestamp) as date',
           'avg(apy_block.balanceBtc) as balance',
@@ -119,15 +120,11 @@ export async function getDailyAggregatedApy (): Promise<IDayData[]> {
           'max(apy_block.block) - min(apy_block.block) + 1 as blockCount'
         ])
         .from(ApyBlock, 'apy_block')
-        .where("date(apy_block.blockTimestamp) = '2022-05-26'")
-        .groupBy(
-          'date(apy_block.blockTimestamp), apy_block.poolToken, apy_block.pool'
-        )
+        .where(`date(apy_block.blockTimestamp) = '${today}'`)
+        .groupBy('date(apy_block.blockTimestamp), apy_block.poolToken')
     }, 's')
     .getRawMany()
 
   console.log(dayData, dayData.length)
   return dayData as IDayData[]
 }
-
-// createConnection(dbConfig).then(async () => await getDailyAggregatedApy());

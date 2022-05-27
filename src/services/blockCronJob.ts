@@ -38,8 +38,8 @@ export async function main (): Promise<void> {
     try {
       const data = await getDataForOneBlock(startBlock)
       console.debug('Data parsed', startBlock)
-      const savedBlocks = await createMultipleBlockRows(data)
-      console.debug('Rows created', savedBlocks)
+      await createMultipleBlockRows(data)
+      console.debug('Rows created')
       startBlock++
     } catch (e) {
       console.error(
@@ -64,14 +64,14 @@ async function getCurrentBlock (): Promise<number> {
 
 async function getDataForOneBlock (block: number): Promise<ILmApyBlock[]> {
   console.debug('Get data for one block', block)
+  console.debug('Get block timestamp', block)
+  const blockTimestamp = await getBlockTimestamp(block)
   const output: ILmApyBlock[] = []
   const { liquidityPoolData, rewardTokenAddress, rewardTokenPrice } =
     await getLiquidityPoolData(block)
   const conversionData = await getConversionFeeData(block)
   console.debug('Get rewards data block', block)
   const rewardsData = await getRewardsData(block, rewardTokenPrice)
-  console.debug('Get block timestamp', block)
-  const blockTimestamp = await getBlockTimestamp(block)
 
   for (const poolToken in liquidityPoolData) {
     output.push({
@@ -137,11 +137,17 @@ async function getLiquidityPoolData (block: number): Promise<{
     } else if (item.type === 2) {
       /** For each token, find the pool token */
       const poolToken0 = item.poolTokens.find(
-        (i) => i.underlyingAssets[0].id === item.token0.id
+        (i) =>
+          i.underlyingAssets[0].id === item.token0.id &&
+          i.underlyingAssets[0].id !== item.smartToken.id
       )?.id
+      console.log('poolToken0', poolToken0)
       const poolToken1 = item.poolTokens.find(
-        (i) => i.underlyingAssets[0].id === item.token0.id
+        (i) =>
+          i.underlyingAssets[0].id === item.token1.id &&
+          i.underlyingAssets[0].id !== item.smartToken.id
       )?.id
+      console.log('poolToken1', poolToken1)
       const btcBalanceToken0 = bignumber(item.token0Balance).mul(
         bignumber(item.token0.lastPriceBtc)
       )
@@ -160,6 +166,7 @@ async function getLiquidityPoolData (block: number): Promise<{
       }
     }
   })
+  console.log(output)
   return {
     liquidityPoolData: output,
     rewardTokenAddress: rewardTokenAddress,
@@ -230,5 +237,3 @@ async function getRewardsData (
   })
   return output
 }
-
-// createConnection(dbConfig).then(async () => await main())

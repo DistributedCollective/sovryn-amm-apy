@@ -1,5 +1,6 @@
 import { CronJob } from 'cron'
 import { main as mainBlockFunction } from './blockCronJob'
+import { main as mainDayFunction } from './dayCronJob'
 import log from '../logger'
 
 const logger = log.logger.child({ module: 'Cron Jobs' })
@@ -32,8 +33,17 @@ class AbstractCronJob {
 
 const blockScheduledTask = new AbstractCronJob(
   mainBlockFunction,
-  '*/1 * * * *',
-  'assets scheduled task'
+  '*/2 * * * *',
+  'block scheduled task'
 )
 
-export const jobList: AbstractCronJob[] = [blockScheduledTask]
+const dayScheduledTask = new AbstractCronJob(
+  mainDayFunction,
+  '*/1 * * * *',
+  'day scheduled task'
+)
+
+export const jobList: AbstractCronJob[] = [
+  blockScheduledTask,
+  dayScheduledTask
+]

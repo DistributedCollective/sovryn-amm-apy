@@ -1,2 +1,3 @@
 import { ApyBlock } from './ApyBlock'
-export { ApyBlock }
+import { ApyDay } from './ApyDay'
+export { ApyBlock, ApyDay }

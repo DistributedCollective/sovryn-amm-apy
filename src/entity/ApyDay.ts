@@ -7,7 +7,7 @@ import { AbstractBaseEntity } from './AbstractBase.entity'
 @Entity()
 export class ApyDay extends AbstractBaseEntity {
   @PrimaryColumn()
-  date!: string
+  date!: Date
 
   @PrimaryColumn()
   @IsEthereumAddress()
