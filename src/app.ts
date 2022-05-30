@@ -4,7 +4,6 @@ import express, { NextFunction, Request, Response } from 'express'
 import helmet from 'helmet'
 import expressRequestId from 'express-request-id'
 import log from './logger'
-// import { router as userRouter } from './routes/user.route'
 import { router as ammApyRouter } from './routes/ammApy.route'
 import { helloSovrynHandler } from './controllers/helloSovrynHandler'
 import { toTheMoonHandler } from './controllers/toTheMoonHandler'
@@ -56,7 +55,6 @@ app.post(
   })
 )
 
-// app.use('/user/', userRouter)
 app.use('/amm', ammApyRouter)
 
 app.use(function (_req: Request, res: Response, _next: NextFunction) {

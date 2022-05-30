@@ -91,6 +91,11 @@ export interface IDayData {
   block_count: number
 }
 
+/**
+ * This sql query calculates the daily APY of each AMM pool token
+ * It selects from a results set average fees, rewards and balance from the ApyBlock table
+ * This is less readable than doing it in javascript, but I think it is more performant
+ */
 export async function getDailyAggregatedApy (): Promise<IDayData[]> {
   const today = new Date().toISOString().slice(0, 10)
   const connection = getConnectionManager().get('default')
@@ -101,23 +106,34 @@ export async function getDailyAggregatedApy (): Promise<IDayData[]> {
       's.poolToken as pool_token',
       's.date as date',
       's.balance as balance',
+      /**
+       * This is the average apy per block:
+       * - Multiplied by blockCount to get apy for 1 day
+       * - Multiplied by 365 to get apy for 1 year
+       * - Multiplied by 100 to convert from decimal to percentage
+       *
+       * The APY is separated into apy from fees, from rewards and from both
+       **/
       'round((s.fees / s.balance) * s.blockCount * 100 * 365, 2) as fees_percent',
       'round((s.rewards / s.balance) * s.blockCount * 100 * 365, 2) as rewards_percent',
       'round(((s.rewards + s.fees) / s.balance) * s.blockCount * 100 * 365, 2) as total_apy',
+      /**
+       * These columns are for debugging
+       */
       's.count as count',
       's.blockCount as block_count'
     ])
     .from((subQuery) => {
       return subQuery
         .select([
-          "string_agg(distinct pool, ',') AS pool",
+          "string_agg(distinct pool, ',') AS pool", // The string_agg function is a workaround for not including pool in the groupBy clause
           'apy_block.poolToken AS poolToken',
           'date(apy_block.blockTimestamp) as date',
-          'avg(apy_block.balanceBtc) as balance',
-          'avg(apy_block.conversionFeeBtc) as fees',
-          'avg(apy_block.rewardsBtc) as rewards',
-          'count(apy_block.poolToken) as count',
-          'max(apy_block.block) - min(apy_block.block) + 1 as blockCount'
+          'avg(apy_block.balanceBtc) as balance', // Average balance in btc for that day
+          'avg(apy_block.conversionFeeBtc) as fees', // Average fees earned
+          'avg(apy_block.rewardsBtc) as rewards', // Average rewards earned
+          'count(apy_block.poolToken) as count', // Number of rows aggregated, for debugging
+          'max(apy_block.block) - min(apy_block.block) + 1 as blockCount' // Number of blocks that day
         ])
         .from(ApyBlock, 'apy_block')
         .where(`date(apy_block.blockTimestamp) = '${today}'`)

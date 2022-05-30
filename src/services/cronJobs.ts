@@ -39,7 +39,7 @@ const blockScheduledTask = new AbstractCronJob(
 
 const dayScheduledTask = new AbstractCronJob(
   mainDayFunction,
-  '*/1 * * * *',
+  '*/30 * * * *',
   'day scheduled task'
 )
 

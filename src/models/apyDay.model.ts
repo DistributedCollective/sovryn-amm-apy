@@ -41,21 +41,17 @@ export async function getAllPoolData (days: number): Promise<ApyDay[]> {
   const date = new Date()
   date.setDate(date.getDate() - days)
   const repository = getRepository(ApyDay)
-  const result = await repository
-    .createQueryBuilder()
-    .select([
-      'ApyDay.pool',
-      'ApyDay.poolToken',
-      'ApyDay.date',
-      'ApyDay.balanceBtc',
-      'ApyDay.feeApy',
-      'ApyDay.rewardsApy'
-    ])
-    .where({
-      createdAt: MoreThan(date)
-    })
-    .getMany()
+  const result = await repository.find({
+    where: { createdAt: MoreThan(date) },
+    select: [
+      'pool',
+      'poolToken',
+      'date',
+      'balanceBtc',
+      'rewardsApy',
+      'feeApy',
+      'totalApy'
+    ]
+  })
   return result
 }
-
-// createConnection(dbConfig).then(() => getAllPoolData(5));

@@ -66,7 +66,6 @@ const config = convict({
     doc: 'Url for deployed subgraph',
     format: 'url',
     default:
-      // "https://graphql-sov-0-0-9-test-1065116833.us-east-2.elb.amazonaws.com/subgraphs/name/DistributedCollective/sovryn-subgraph",
       'https://subgraph.sovryn.app/subgraphs/name/DistributedCollective/sovryn-subgraph',
     env: 'SUBGRAPH_URL'
   },
