@@ -4,10 +4,7 @@ import express, { NextFunction, Request, Response } from 'express'
 import helmet from 'helmet'
 import expressRequestId from 'express-request-id'
 import log from './logger'
-import { router as userRouter } from './routes/user.route'
-import { helloSovrynHandler } from './controllers/helloSovrynHandler'
-import { toTheMoonHandler } from './controllers/toTheMoonHandler'
-import asyncMiddleware from './utils/asyncMiddleware'
+import { router as ammApyRouter } from './routes/ammApy.route'
 import responseTime from 'response-time'
 import errorHandler from './errorHandlers/errorHandler'
 import { HTTP404Error } from './errorHandlers/baseError'
@@ -28,28 +25,11 @@ app.use((req: Request, _res: Response, next: NextFunction) => {
 })
 
 app.get('/', (req, res) => {
-  req.log.info(req, 'Sovryn boilerplate Service Running. Stay Sovryn.')
-  res.send('Sovryn boilerplate Service Running. Stay Sovryn.')
+  req.log.info(req, 'Sovryn Amm Apy Service Running. Stay Sovryn.')
+  res.send('Sovryn Amm Apy Service Running. Stay Sovryn.')
 })
 
-app.get('/test', (req, res) => {
-  req.log.info(req, 'test')
-  res.json({ message: 'Pass!' })
-})
-
-app.post('/helloSovryn', asyncMiddleware(async (req: Request, res: Response) => {
-  req.log.info(req, 'handling request for Hello Sovryn')
-  const response = await helloSovrynHandler(req.body)
-  res.send(response)
-}))
-
-app.post('/toTheMoon', asyncMiddleware(async (req: Request, res: Response) => {
-  const response = await toTheMoonHandler(req.body)
-  req.log.info(response, 'service returned for To The Moon')
-  res.send(response)
-}))
-
-app.use('/user/', userRouter)
+app.use('/amm', ammApyRouter)
 
 app.use(function (_req: Request, res: Response, _next: NextFunction) {
   res.status(404).send("Sorry can't find that!")
