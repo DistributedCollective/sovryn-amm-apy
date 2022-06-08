@@ -95,6 +95,7 @@ export interface IDayData {
  * This sql query calculates the daily APY of each AMM pool token
  * It selects from a results set average fees, rewards and balance from the ApyBlock table
  * This is less readable than doing it in javascript, but I think it is more performant
+ *
  */
 export async function getDailyAggregatedApy (): Promise<IDayData[]> {
   const today = new Date().toISOString().slice(0, 10)
@@ -137,6 +138,7 @@ export async function getDailyAggregatedApy (): Promise<IDayData[]> {
         ])
         .from(ApyBlock, 'apy_block')
         .where(`date(apy_block.blockTimestamp) = '${today}'`)
+        .andWhere('apy_block.balanceBtc > 0') // To avoid division by zero. TODO: refactor this to use javascript
         .groupBy('date(apy_block.blockTimestamp), apy_block.poolToken')
     }, 's')
     .getRawMany()
