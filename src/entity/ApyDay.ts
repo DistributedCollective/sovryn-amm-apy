@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryColumn } from 'typeorm'
+import { Entity, Column, PrimaryColumn, Index } from 'typeorm'
 
 import { IsEthereumAddress, IsNumber } from 'class-validator'
 
@@ -13,6 +13,7 @@ export class ApyDay extends AbstractBaseEntity {
   @IsEthereumAddress()
   poolToken!: string
 
+  @Index()
   @Column()
   @IsEthereumAddress()
   pool!: string

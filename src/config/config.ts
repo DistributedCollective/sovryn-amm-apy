@@ -34,7 +34,7 @@ const config = convict({
   postgresHost: {
     doc: 'postgres host',
     format: String,
-    default: 'sov-postgres',
+    default: 'localhost',
     env: 'POSTGRES_HOST'
   },
   postgresPort: {
@@ -46,13 +46,13 @@ const config = convict({
   postgresUser: {
     doc: 'postgres user',
     format: String,
-    default: 'sov-postgres',
+    default: 'postgres',
     env: 'POSTGRES_USER'
   },
   postgresPassword: {
     doc: 'postgres password',
     format: '*',
-    default: '',
+    default: 'postgres',
     env: 'POSTGRES_PASSWORD',
     sensitive: true
   },

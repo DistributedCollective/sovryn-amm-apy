@@ -1,5 +1,6 @@
-import { getAllPoolData } from '../models/apyDay.model'
+import { getAllPoolData, getOnePoolData } from '../models/apyDay.model'
 import { isNil } from 'lodash'
+import { ApyDay } from '../entity/ApyDay'
 
 interface IAmmApyAll {
   [key: string]: {
@@ -83,4 +84,9 @@ export async function getAmmApyAll (days: number = 7): Promise<IAmmApyAll> {
     }
   }
   return output
+}
+
+export async function getPoolApyToday (pool: string): Promise<ApyDay> {
+  const result = await getOnePoolData(pool)
+  return result
 }

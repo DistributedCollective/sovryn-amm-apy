@@ -1,9 +1,9 @@
-import { IDayData } from './apyBlock.model'
+import { ICalculatedDayData } from './apyBlock.model'
 import { getRepository, MoreThan } from 'typeorm'
 import { ApyDay } from '../entity'
 import { isNil } from 'lodash'
 
-export async function saveApyDayRow (data: IDayData): Promise<void> {
+export async function saveApyDayRow (data: ICalculatedDayData): Promise<void> {
   const newRow = new ApyDay()
   newRow.date = new Date(data.date.setHours(0, 0, 0, 0))
   newRow.poolToken = data.pool_token
@@ -43,6 +43,23 @@ export async function getAllPoolData (days: number): Promise<ApyDay[]> {
   const repository = getRepository(ApyDay)
   const result = await repository.find({
     where: { createdAt: MoreThan(date) },
+    select: [
+      'pool',
+      'poolToken',
+      'date',
+      'balanceBtc',
+      'rewardsApy',
+      'feeApy',
+      'totalApy'
+    ]
+  })
+  return result
+}
+
+export async function getOnePoolData (pool: string): Promise<ApyDay> {
+  const repository = getRepository(ApyDay)
+  const result = await repository.findOneOrFail({
+    where: { pool: pool },
     select: [
       'pool',
       'poolToken',
