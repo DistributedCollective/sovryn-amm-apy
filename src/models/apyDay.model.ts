@@ -2,6 +2,7 @@ import { ICalculatedDayData } from './apyBlock.model'
 import { getRepository, MoreThan } from 'typeorm'
 import { ApyDay } from '../entity'
 import { isNil } from 'lodash'
+import { HTTP404Error } from '../errorHandlers/baseError'
 
 export async function saveApyDayRow (data: ICalculatedDayData): Promise<void> {
   const newRow = new ApyDay()
@@ -56,19 +57,15 @@ export async function getAllPoolData (days: number): Promise<ApyDay[]> {
   return result
 }
 
-export async function getOnePoolData (pool: string): Promise<ApyDay> {
+export async function getOnePoolData (pool: string): Promise<ApyDay[]> {
   const repository = getRepository(ApyDay)
-  const result = await repository.findOneOrFail({
+  const result = await repository.find({
     where: { pool: pool },
-    select: [
-      'pool',
-      'poolToken',
-      'date',
-      'balanceBtc',
-      'rewardsApy',
-      'feeApy',
-      'totalApy'
-    ]
+    select: ['pool', 'poolToken', 'date', 'rewardsApy', 'feeApy', 'totalApy']
   })
-  return result
+  if (result.length > 0) {
+    return result
+  } else {
+    throw new HTTP404Error('Pool address not found')
+  }
 }
