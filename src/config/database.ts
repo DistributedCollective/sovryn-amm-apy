@@ -21,7 +21,7 @@ const dbConfig: ConnectionOptions = {
   entities: [ApyBlock, ApyDay],
   migrations: ['src/migration/**/*.ts'],
   logging: ['error', 'warn'],
-  synchronize: true,
+  synchronize: false,
   cli: {
     migrationsDir: 'src/migration'
   }
