@@ -1,4 +1,4 @@
-import { getRepository } from 'typeorm'
+import { DeleteResult, getRepository, LessThan } from 'typeorm'
 import { ApyBlock } from '../entity'
 import { notEmpty } from '../utils/common'
 import { isNil } from 'lodash'
@@ -119,4 +119,12 @@ export async function getDailyAggregatedApy (
     .groupBy('date(apy_block.blockTimestamp), apy_block.poolToken')
     .getRawMany()
   return dayData as IRawDayData[]
+}
+
+export async function dataCleanup (maxAge: Date): Promise<DeleteResult> {
+  const apyBlockRepository = getRepository(ApyBlock)
+  const result = await apyBlockRepository.delete({
+    blockTimestamp: LessThan(maxAge.toISOString())
+  })
+  return result
 }

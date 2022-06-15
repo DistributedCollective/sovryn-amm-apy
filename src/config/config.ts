@@ -90,7 +90,7 @@ const config = convict({
   maxBlockDataRetention: {
     doc: 'Maximum number of days to keep block by block apy data',
     format: Number,
-    default: 14,
+    default: 3,
     env: 'MAX_BLOCK_DATA_RETENTION'
   }
 })
