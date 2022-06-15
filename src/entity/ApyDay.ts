@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryColumn } from 'typeorm'
+import { Entity, Column, PrimaryColumn, Index } from 'typeorm'
 
 import { IsEthereumAddress, IsNumber } from 'class-validator'
 
@@ -13,23 +13,24 @@ export class ApyDay extends AbstractBaseEntity {
   @IsEthereumAddress()
   poolToken!: string
 
+  @Index()
   @Column()
   @IsEthereumAddress()
   pool!: string
 
-  @Column('decimal', { precision: 5, scale: 2 })
+  @Column('decimal', { precision: 25, scale: 18 })
   @IsNumber({ allowNaN: false, allowInfinity: false, maxDecimalPlaces: 18 })
   balanceBtc!: number
 
-  @Column('decimal', { precision: 5, scale: 2 })
+  @Column('decimal', { precision: 10, scale: 2 })
   @IsNumber({ allowNaN: false, allowInfinity: false, maxDecimalPlaces: 18 })
   feeApy!: number
 
-  @Column('decimal', { precision: 5, scale: 2 })
+  @Column('decimal', { precision: 10, scale: 2 })
   @IsNumber({ allowNaN: false, allowInfinity: false, maxDecimalPlaces: 18 })
   rewardsApy!: number
 
-  @Column('decimal', { precision: 5, scale: 2 })
+  @Column('decimal', { precision: 10, scale: 2 })
   @IsNumber({ allowNaN: false, allowInfinity: false, maxDecimalPlaces: 18 })
   totalApy!: number
 }

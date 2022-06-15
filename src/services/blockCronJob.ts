@@ -76,23 +76,25 @@ async function getDataForOneBlock (block: number): Promise<ILmApyBlock[]> {
   const rewardsData = await getRewardsData(block, rewardTokenPrice)
 
   for (const poolToken in liquidityPoolData) {
-    output.push({
-      block: block,
-      blockTimestamp: blockTimestamp,
-      poolToken: poolToken,
-      pool: liquidityPoolData[poolToken].pool,
-      balanceBtc: liquidityPoolData[poolToken].balanceBtc,
-      conversionFeeBtc: !isNil(conversionData[poolToken])
-        ? conversionData[poolToken]
-        : '0',
-      rewards: !isNil(rewardsData[poolToken])
-        ? rewardsData[poolToken].rewards
-        : '0',
-      rewardsCurrency: rewardTokenAddress,
-      rewardsBtc: !isNil(rewardsData[poolToken])
-        ? rewardsData[poolToken].rewardsBtc
-        : '0'
-    })
+    if (liquidityPoolData[poolToken].balanceBtc !== '0') {
+      output.push({
+        block: block,
+        blockTimestamp: blockTimestamp,
+        poolToken: poolToken,
+        pool: liquidityPoolData[poolToken].pool,
+        balanceBtc: liquidityPoolData[poolToken].balanceBtc,
+        conversionFeeBtc: !isNil(conversionData[poolToken])
+          ? conversionData[poolToken]
+          : '0',
+        rewards: !isNil(rewardsData[poolToken])
+          ? rewardsData[poolToken].rewards
+          : '0',
+        rewardsCurrency: rewardTokenAddress,
+        rewardsBtc: !isNil(rewardsData[poolToken])
+          ? rewardsData[poolToken].rewardsBtc
+          : '0'
+      })
+    }
   }
   return output
 }

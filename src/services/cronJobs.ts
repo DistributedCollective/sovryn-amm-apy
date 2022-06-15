@@ -1,6 +1,7 @@
 import { CronJob } from 'cron'
 import { main as mainBlockFunction } from './blockCronJob'
 import { main as mainDayFunction } from './dayCronJob'
+import { main as mainCleanupFunction } from './cleanupCronJob'
 import log from '../logger'
 
 const logger = log.logger.child({ module: 'Cron Jobs' })
@@ -43,7 +44,14 @@ const dayScheduledTask = new AbstractCronJob(
   'day scheduled task'
 )
 
+const cleanupScheduledJob = new AbstractCronJob(
+  mainCleanupFunction,
+  '15 */6 * * *',
+  'cleanup scheduled task'
+)
+
 export const jobList: AbstractCronJob[] = [
   blockScheduledTask,
-  dayScheduledTask
+  dayScheduledTask,
+  cleanupScheduledJob
 ]
