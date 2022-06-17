@@ -61,6 +61,37 @@ const config = convict({
     format: String,
     default: 'sov-amm-apy',
     env: 'POSTGRES_DB'
+  },
+  subgraphUrl: {
+    doc: 'Url for deployed subgraph',
+    format: 'url',
+    default:
+      'https://subgraph.sovryn.app/subgraphs/name/DistributedCollective/sovryn-subgraph',
+    env: 'SUBGRAPH_URL'
+  },
+  RSKRpc: {
+    doc: 'RSK mainnet endpoint',
+    format: 'url',
+    default: 'https://rsk-graph1.sovryn.app/rpc',
+    env: 'RSK_RPC'
+  },
+  chunkSize: {
+    doc: 'Chunk size for blocks per loop',
+    format: Number,
+    default: 10,
+    env: 'CHUNK_SIZE'
+  },
+  errorThreshold: {
+    doc: 'Number of errors allowed before incrementing block number',
+    format: Number,
+    default: 5,
+    env: 'ERROR_THRESHOLD'
+  },
+  maxBlockDataRetention: {
+    doc: 'Maximum number of days to keep block by block apy data',
+    format: Number,
+    default: 3,
+    env: 'MAX_BLOCK_DATA_RETENTION'
   }
 })
 

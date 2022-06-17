@@ -12,6 +12,8 @@
     "LOG_LEVEL": "debug",
     "PORT": "3000",
     "POSTGRES_PORT": "5432",
-    "POSTGRES_DB": "sov-amm-apy-main"
+    "POSTGRES_DB": "sov-amm-apy-test",
+    "RSK_RPC": "https://testnet.sovryn.app/rpc",
+    "SUBGRAPH_URL": "https://subgraph.test.sovryn.app/subgraphs/name/DistributedCollective/sovryn-subgraph"
   }
 }

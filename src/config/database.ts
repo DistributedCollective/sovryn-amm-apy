@@ -1,9 +1,15 @@
 import { ConnectionOptions } from 'typeorm'
-import { User } from '../entity'
+import { ApyBlock, ApyDay } from '../entity'
 
-import config, { Environment } from './config'
+import config from './config'
 
-const { postgresHost, postgresPort, postgresUser, postgresPassword, postgresDatabase, env } = config
+const {
+  postgresHost,
+  postgresPort,
+  postgresUser,
+  postgresPassword,
+  postgresDatabase
+} = config
 
 const dbConfig: ConnectionOptions = {
   type: 'postgres',
@@ -12,12 +18,10 @@ const dbConfig: ConnectionOptions = {
   username: postgresUser,
   password: postgresPassword,
   database: postgresDatabase,
-  entities: [User],
-  migrations: [
-    'src/migration/**/*.ts'
-  ],
+  entities: [ApyBlock, ApyDay],
+  migrations: ['src/migration/**/*.ts'],
   logging: ['error', 'warn'],
-  synchronize: env === Environment.Development,
+  synchronize: false,
   cli: {
     migrationsDir: 'src/migration'
   }

@@ -1,6 +1,5 @@
 import {
   Entity,
-  PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
   BaseEntity,
@@ -18,8 +17,8 @@ const logger = log.logger.child({ module: 'AbstractBaseEntity' })
 
 @Entity()
 export class AbstractBaseEntity extends BaseEntity {
-  @PrimaryGeneratedColumn('uuid')
-  id!: number
+  // @PrimaryGeneratedColumn('uuid')
+  // id!: number
 
   @CreateDateColumn()
   createdAt!: Date
