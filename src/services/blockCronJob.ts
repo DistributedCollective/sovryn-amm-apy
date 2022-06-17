@@ -34,6 +34,8 @@ export async function main (): Promise<void> {
     endBlock = startBlock + chunkSize
   }
 
+  logger.debug(`Start block: ${startBlock}; End block: ${endBlock}`)
+
   while (startBlock <= endBlock) {
     let numErrors = 0
     try {
