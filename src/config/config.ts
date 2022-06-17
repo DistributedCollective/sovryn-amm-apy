@@ -93,8 +93,9 @@ const config = convict({
     default: 3,
     env: "MAX_BLOCK_DATA_RETENTION",
   },
-});
+})
 
 config.validate({ allowed: "strict" });
 
 export default config.getProperties();
+
