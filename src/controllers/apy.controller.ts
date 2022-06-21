@@ -1,7 +1,14 @@
-import { getAllPoolData, getOnePoolData } from '../models/apyDay.model'
+import {
+  getAllPoolData,
+  getOnePoolApy,
+  getOnePoolData
+} from '../models/apyDay.model'
 import { isNil } from 'lodash'
 import { ApyDay } from '../entity/ApyDay'
 import { bignumber } from 'mathjs'
+import config from '../config/config'
+
+const { defaultDataRange } = config
 
 interface IAmmApyAll {
   [key: string]: {
@@ -34,8 +41,6 @@ function updateBalanceHistory (
     balance_btc: row.balanceBtc,
     pool: row.pool
   }
-  console.log(balanceHistory)
-  console.log(row)
   const balanceHistoryIndex = balanceHistory.findIndex(
     (item) =>
       item.activity_date.toISOString() ===
@@ -53,11 +58,9 @@ function updateBalanceHistory (
   return balanceHistory
 }
 
-/** TODO: Dry up this code */
-export async function getAmmApyAll (days: number = 7): Promise<IAmmApyAll> {
-  const rows = await getAllPoolData(days)
+function parseApyHistoryData (data: ApyDay[]): IAmmApyAll {
   const output: IAmmApyAll = {}
-  for (const row of rows) {
+  for (const row of data) {
     const poolExists = !isNil(output[row.pool])
     const poolTokenExists =
       poolExists && !isNil(output[row.pool].data[row.poolToken])
@@ -96,8 +99,25 @@ export async function getAmmApyAll (days: number = 7): Promise<IAmmApyAll> {
   return output
 }
 
+export async function getAmmApyAll (
+  days: number = defaultDataRange
+): Promise<IAmmApyAll> {
+  const rows = await getAllPoolData(days)
+  const output = parseApyHistoryData(rows)
+  return output
+}
+
+export async function getPoolData (
+  pool: string,
+  days: number = defaultDataRange
+): Promise<IAmmApyAll> {
+  const rows = await getOnePoolData(pool, days)
+  const output = parseApyHistoryData(rows)
+  return output
+}
+
 export async function getPoolApyToday (pool: string): Promise<ApyDay[]> {
-  const result = await getOnePoolData(pool)
+  const result = await getOnePoolApy(pool)
   return result.filter(
     (item) =>
       item.date.toISOString() ===

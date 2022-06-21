@@ -92,6 +92,12 @@ const config = convict({
     format: Number,
     default: 2,
     env: 'MAX_BLOCK_DATA_RETENTION'
+  },
+  defaultDataRange: {
+    doc: 'Default number of days to fetch data for',
+    format: Number,
+    default: 7,
+    env: 'DEFAULT_DATA_RANGE'
   }
 })
 
