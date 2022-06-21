@@ -73,7 +73,7 @@ export async function getLastSavedBlock (): Promise<number | null> {
     take: 1
   })
   if (!isNil(row[0])) {
-    return row[0].block + 1
+    return row[0].block
   } else {
     return null
   }
