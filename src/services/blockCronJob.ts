@@ -25,13 +25,13 @@ const { errorThreshold, chunkSize } = config
 
 export async function main (): Promise<void> {
   let startBlock = await getLastSavedBlock()
-  let endBlock = await getCurrentBlock()
+  const endBlock = await getCurrentBlock()
   const startTime = new Date().getTime()
 
   if (isNil(startBlock)) {
     startBlock = endBlock - chunkSize
   } else if (endBlock - startBlock > chunkSize) {
-    endBlock = startBlock + chunkSize
+    startBlock = endBlock - chunkSize
   }
 
   logger.debug(`Start block: ${startBlock}; End block: ${endBlock}`)
