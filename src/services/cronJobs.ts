@@ -46,7 +46,7 @@ const dayScheduledTask = new AbstractCronJob(
 
 const cleanupScheduledJob = new AbstractCronJob(
   mainCleanupFunction,
-  '15 */6 * * *',
+  '15 */2 * * *',
   'cleanup scheduled task'
 )
 

@@ -78,7 +78,7 @@ const config = convict({
   chunkSize: {
     doc: 'Chunk size for blocks per loop',
     format: Number,
-    default: 10,
+    default: 50,
     env: 'CHUNK_SIZE'
   },
   errorThreshold: {
@@ -90,7 +90,7 @@ const config = convict({
   maxBlockDataRetention: {
     doc: 'Maximum number of days to keep block by block apy data',
     format: Number,
-    default: 3,
+    default: 2,
     env: 'MAX_BLOCK_DATA_RETENTION'
   }
 })
