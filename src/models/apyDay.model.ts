@@ -57,11 +57,37 @@ export async function getAllPoolData (days: number): Promise<ApyDay[]> {
   return result
 }
 
-export async function getOnePoolData (pool: string): Promise<ApyDay[]> {
+export async function getOnePoolApy (pool: string): Promise<ApyDay[]> {
   const repository = getRepository(ApyDay)
   const result = await repository.find({
     where: { pool: pool },
     select: ['pool', 'poolToken', 'date', 'rewardsApy', 'feeApy', 'totalApy']
+  })
+  if (result.length > 0) {
+    return result
+  } else {
+    throw new HTTP404Error('Pool address not found')
+  }
+}
+
+export async function getOnePoolData (
+  pool: string,
+  days: number
+): Promise<ApyDay[]> {
+  const date = new Date()
+  date.setDate(date.getDate() - days)
+  const repository = getRepository(ApyDay)
+  const result = await repository.find({
+    where: { pool: pool, createdAt: MoreThan(date) },
+    select: [
+      'pool',
+      'poolToken',
+      'date',
+      'balanceBtc',
+      'rewardsApy',
+      'feeApy',
+      'totalApy'
+    ]
   })
   if (result.length > 0) {
     return result

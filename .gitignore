@@ -31,3 +31,4 @@ dist/
 .env
 graphql.schema.json
 generated-schema.ts
+testFile.ts
