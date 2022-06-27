@@ -106,17 +106,15 @@ export async function getDailyAggregatedApy (
   const dayData = await apyBlockRepository
     .createQueryBuilder()
     .select([
-      "string_agg(distinct apy_block.pool, ',') AS pool", // The string_agg function is a workaround for not including pool in the groupBy clause
-      'apy_block.poolToken AS pool_token',
-      'date(apy_block.blockTimestamp) as date',
-      'avg(apy_block.balanceBtc) as avg_balance', // Average balance in btc for that day
-      'sum(apy_block.conversionFeeBtc) as sum_fees', // Average fees earned
-      'sum(apy_block.rewardsBtc) as sum_rewards', // Average rewards earned
-      'count(apy_block.poolToken) as count' // Number of rows aggregated, for debugging
+      "string_agg(distinct ApyBlock.pool, ',') AS pool", // The string_agg function is a workaround for not including pool in the groupBy clause
+      'ApyBlock.poolToken AS pool_token',
+      'date(ApyBlock.blockTimestamp) as date',
+      'avg(ApyBlock.balanceBtc) as avg_balance', // Average balance in btc for that day
+      'sum(ApyBlock.conversionFeeBtc) as sum_fees', // Average fees earned
+      'sum(ApyBlock.rewardsBtc) as sum_rewards' // Average rewards earned
     ])
-    .from(ApyBlock, 'apy_block')
-    .where(`date(apy_block.blockTimestamp) >= '${startDate}'`)
-    .groupBy('date(apy_block.blockTimestamp), apy_block.poolToken')
+    .where(`ApyBlock.blockTimestamp >= '${startDate}'`)
+    .groupBy('date(ApyBlock.blockTimestamp), ApyBlock.poolToken')
     .getRawMany()
   return dayData as IRawDayData[]
 }
