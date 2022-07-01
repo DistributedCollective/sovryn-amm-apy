@@ -13,8 +13,8 @@ import { getBlockTimestamp } from '../utils/getBlockTimestamp'
 import { currentBlock } from '../queries/currentBlock'
 import {
   ILmApyBlock,
-  createMultipleBlockRows,
-  getLastSavedBlock
+  getLastSavedBlock,
+  createBlockRow
 } from '../models/apyBlock.model'
 import config from '../config/config'
 import log from '../logger'
@@ -25,24 +25,30 @@ const { errorThreshold, chunkSize } = config
 
 export async function main (): Promise<void> {
   let startBlock = await getLastSavedBlock()
-  let endBlock = await getCurrentBlock()
+  const endBlock = await getCurrentBlock()
   const startTime = new Date().getTime()
 
   if (isNil(startBlock)) {
     startBlock = endBlock - chunkSize
   } else if (endBlock - startBlock > chunkSize) {
-    endBlock = startBlock + chunkSize
+    startBlock = endBlock - chunkSize
   }
 
   logger.debug(`Start block: ${startBlock}; End block: ${endBlock}`)
 
-  while (startBlock <= endBlock) {
+  while (startBlock < endBlock) {
     let numErrors = 0
     try {
       logger.info('Getting all data for block %s', [startBlock])
       const data = await getDataForOneBlock(startBlock)
       logger.info('Creating database rows for block %s', [startBlock])
-      await createMultipleBlockRows(data)
+
+      const promises = data.map(async (item) => await createBlockRow(item))
+      Promise.resolve(promises)
+        .then(() =>
+          logger.debug('Database block rows created for block %s', [startBlock])
+        )
+        .catch((e) => logger.error(e))
       startBlock++
     } catch (e) {
       logger.error(

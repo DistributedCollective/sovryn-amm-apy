@@ -17,7 +17,12 @@
       "migrations:generate": "npx ts-node ./node_modules/.bin/typeorm migration:generate -f ./src/config/database.ts",
       "migrations:run": "npx ts-node ./node_modules/.bin/typeorm migration:run -f ./src/config/database.ts",
       "migrations:revert": "npx ts-node ./node_modules/.bin/typeorm migration:revert -f ./src/config/database.ts",
+<<<<<<< HEAD
       "codegen": "graphql-codegen --config ./codegen.yml"
+=======
+      "codegen": "graphql-codegen --config ./codegen.yml",
+      "migrate:dev": "export POSTGRES_HOST=localhost && export POSTGRES_PASSWORD=postgres export POSTGRES_DB=sov-amm-apy && npm run migrations:run"
+>>>>>>> development
    },
    "keywords": [
       "Sovryn"

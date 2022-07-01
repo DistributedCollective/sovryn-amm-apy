@@ -59,43 +59,48 @@ const config = convict({
   postgresDatabase: {
     doc: "postgres database",
     format: String,
-    default: "sov-amm-apy",
-    env: "POSTGRES_DB",
+    default: 'sov-amm-apy',
+    env: 'POSTGRES_DB'
   },
   subgraphUrl: {
-    doc: "Url for deployed subgraph",
-    format: "url",
+    doc: 'Url for deployed subgraph',
+    format: 'url',
     default:
-      "https://subgraph.sovryn.app/subgraphs/name/DistributedCollective/sovryn-subgraph",
-    env: "SUBGRAPH_URL",
+      'https://subgraph.sovryn.app/subgraphs/name/DistributedCollective/sovryn-subgraph',
+    env: 'SUBGRAPH_URL'
   },
   RSKRpc: {
-    doc: "RSK mainnet endpoint",
-    format: "url",
-    default: "https://rsk-graph1.sovryn.app/rpc",
-    env: "RSK_RPC",
+    doc: 'RSK mainnet endpoint',
+    format: 'url',
+    default: 'https://rsk-graph1.sovryn.app/rpc',
+    env: 'RSK_RPC'
   },
   chunkSize: {
-    doc: "Chunk size for blocks per loop",
+    doc: 'Chunk size for blocks per loop',
     format: Number,
     default: 50,
-    env: "CHUNK_SIZE",
+    env: 'CHUNK_SIZE'
   },
   errorThreshold: {
-    doc: "Number of errors allowed before incrementing block number",
+    doc: 'Number of errors allowed before incrementing block number',
     format: Number,
     default: 5,
-    env: "ERROR_THRESHOLD",
+    env: 'ERROR_THRESHOLD'
   },
   maxBlockDataRetention: {
-    doc: "Maximum number of days to keep block by block apy data",
+    doc: 'Maximum number of days to keep block by block apy data',
     format: Number,
-    default: 3,
-    env: "MAX_BLOCK_DATA_RETENTION",
+    default: 2,
+    env: 'MAX_BLOCK_DATA_RETENTION'
   },
+  defaultDataRange: {
+    doc: 'Default number of days to fetch data for',
+    format: Number,
+    default: 7,
+    env: 'DEFAULT_DATA_RANGE'
+  }
 })
 
 config.validate({ allowed: "strict" });
 
 export default config.getProperties();
-
