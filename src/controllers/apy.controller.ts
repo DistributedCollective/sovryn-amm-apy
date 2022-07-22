@@ -118,9 +118,5 @@ export async function getPoolData (
 
 export async function getPoolApyToday (pool: string): Promise<ApyDay[]> {
   const result = await getOnePoolApy(pool)
-  return result.filter(
-    (item) =>
-      item.date.toISOString() ===
-      new Date(new Date().setHours(0, 0, 0, 0)).toISOString()
-  )
+  return result
 }
