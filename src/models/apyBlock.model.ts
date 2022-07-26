@@ -99,22 +99,23 @@ export interface IRawDayData {
 }
 
 /** This function can be used to aggregate apy over any period (eg daily or rolling 24 hours) */
-export async function getDailyAggregatedApy (
-  startDate: string
-): Promise<IRawDayData[]> {
+export async function getDailyAggregatedApy (): Promise<IRawDayData[]> {
+  const yesterday = new Date(
+    new Date().getTime() - 24 * 60 * 60 * 1000
+  ).toISOString()
   const apyBlockRepository = getRepository(ApyBlock)
   const dayData = await apyBlockRepository
     .createQueryBuilder()
     .select([
       "string_agg(distinct ApyBlock.pool, ',') AS pool", // The string_agg function is a workaround for not including pool in the groupBy clause
       'ApyBlock.poolToken AS pool_token',
-      'date(ApyBlock.blockTimestamp) as date',
+      'max(date(ApyBlock.blockTimestamp)) as date',
       'avg(ApyBlock.balanceBtc) as avg_balance', // Average balance in btc for that day
       'sum(ApyBlock.conversionFeeBtc) as sum_fees', // Average fees earned
       'sum(ApyBlock.rewardsBtc) as sum_rewards' // Average rewards earned
     ])
-    .where(`ApyBlock.blockTimestamp >= '${startDate}'`)
-    .groupBy('date(ApyBlock.blockTimestamp), ApyBlock.poolToken')
+    .where(`ApyBlock.blockTimestamp >= '${yesterday}'`)
+    .groupBy('ApyBlock.poolToken')
     .getRawMany()
   return dayData as IRawDayData[]
 }
