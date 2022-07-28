@@ -10,8 +10,7 @@ import { bignumber } from 'mathjs'
 const logger = log.logger.child({ module: 'Apy Day Cronjob' })
 
 export async function main (): Promise<void> {
-  const yesterday = new Date(new Date().getTime() - 24 * 60 * 60 * 1000)
-  const rawDayData = await getDailyAggregatedApy(yesterday.toISOString())
+  const rawDayData = await getDailyAggregatedApy()
   logger.debug(rawDayData)
   for (const row of rawDayData) {
     if (parseFloat(row.avg_balance) > 0) {
