@@ -24,11 +24,6 @@ Then, aggregate this data per day as a daily APY:
 
 Currently there is just one endpoint, /amm, that returns data for the previous 7 days for all pools. This matches the response body structure of the legacy backend endpoint
 
-# Improvements
-1. Add a cleanup cron job to delete block apy data that is over 14 days old to avoid massive amounts of unused data
-2. Add api endpoint for data for a single poolToken
-3. Add more tests
-
 ## Database Migrations
 
 1. Generate migration
