@@ -16,6 +16,7 @@ jobs:
     needs: [call-workflow-init]
     with:
       IMAGE_NAME: ${{ needs.call-workflow-init.outputs.image_name }}
+      KUBE_NAMESPACE: ${{ needs.call-workflow-init.outputs.KUBE_NAMESPACE }}
       event_name: ${{ github.event_name }}
       registry: ${{ needs.call-workflow-init.outputs.registry }}
       dockerfile_path:  ${{ needs.call-workflow-init.outputs.dockerfile_path }}
@@ -27,6 +28,7 @@ jobs:
     if: github.event_name != 'pull_request'
     uses: DistributedCollective/.github/.github/workflows/deploy-k8s.yml@ci_envs # in case additional secrets is needed, this file must be changed and pushed to your repository
     with:
+      IMAGE_NAME: ${{ needs.call-workflow-init.outputs.image_name }}
       KUBE_NAMESPACE: ${{ needs.call-workflow-init.outputs.KUBE_NAMESPACE }}
       ci_env: ${{ needs.call-workflow-init.outputs.ci_env }}
       aws_region: ${{ needs.call-workflow-init.outputs.aws_region }}
