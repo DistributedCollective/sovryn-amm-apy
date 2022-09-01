@@ -22,7 +22,7 @@ spec:
         app: sovryn-amm-apy
     spec:
       containers:
-      - image: sovryn/sovryn-amm-apy:latest
+      - image: sovryn/sovryn-amm-apy
         name: sovryn-amm-apy
         resources: {}
         terminationMessagePath: /dev/termination-log
