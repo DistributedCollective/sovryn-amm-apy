@@ -1,4 +1,8 @@
 import convict from 'convict'
+import convictFormatWithValidator from 'convict-format-with-validator'
+
+// Add all formats
+convict.addFormats(convictFormatWithValidator)
 
 export enum Environment {
   Production = 'production',
