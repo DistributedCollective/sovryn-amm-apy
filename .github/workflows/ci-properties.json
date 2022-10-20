@@ -22,7 +22,7 @@
   "PROD_ENV_VARS": {
     "NODE_ENV": "production",
     "POSTGRES_DB": "sov-amm-apy-main",
-    "RSK_RPC": "https://rsk-graph1.sovryn.app/rpc",
+    "RSK_RPC": "https://rsk-internal.sovryn.app/rpc",
     "SUBGRAPH_URL": "https://subgraph.sovryn.app/subgraphs/name/DistributedCollective/sovryn-subgraph"
   }
 }
