@@ -62,3 +62,22 @@ router.get(
     }
   })
 )
+
+router.get(
+  '/pool-balance/:poolSymbol',
+  asyncMiddleware(async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      req.log.info('handling pool balance request')
+      const errors = validationResult(req)
+      if (!errors.isEmpty()) {
+        req.log.debug(errors.array(), 'handling message errors')
+        throw new InputValidateError(errors.array())
+      }
+      // const response = await getPoolApyToday(req.params.pool);
+      // res.send(response);
+      res.status(200).send('Placeholder')
+    } catch (error) {
+      next(error)
+    }
+  })
+)
