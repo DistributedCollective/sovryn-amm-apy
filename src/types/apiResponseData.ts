@@ -1,4 +1,4 @@
-interface PoolBalanceResponse {
+export interface PoolBalanceResponse {
   ammPool: string
   contractBalanceToken: number
   stakedBalanceToken: number
@@ -6,14 +6,12 @@ interface PoolBalanceResponse {
   contractBalanceBtc: number
   stakedBalanceBtc: number
   btcDelta: number
-  yesterdayApy: [
-    {
-      pool: string
-      pool_token: string
-      activity_date: Date
-      apy: number
-    }
-  ]
+  yesterdayApy: Array<{
+    pool: string
+    pool_token: string
+    activity_date: Date
+    apy: number
+  }>
 }
 
 export const examplePoolBalanceResponse: PoolBalanceResponse = {

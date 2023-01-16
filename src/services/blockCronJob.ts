@@ -16,6 +16,7 @@ import {
   getLastSavedBlock,
   createBlockRow
 } from '../models/apyBlock.model'
+import balanceCache from './balanceCache'
 import config from '../config/config'
 import log from '../logger'
 
@@ -122,6 +123,15 @@ async function getLiquidityPoolData (block: number): Promise<{
   const liquidityPoolData: ILiquidityPoolData = await getQuery(
     liquidityPoolDataByBlock(block)
   )
+  /**
+   * TODO: Refactor this whole function - it mutates and also returns an output which is not good
+   */
+  balanceCache
+    .handleNewLiquidityPoolData(block, liquidityPoolData.liquidityPools)
+    .catch((e) => {
+      logger.error(e)
+    })
+
   const liquidityPools = liquidityPoolData.liquidityPools
   const rewardsToken = liquidityPools.find(
     (item) => item.token1.symbol === 'SOV'

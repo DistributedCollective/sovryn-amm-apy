@@ -2,6 +2,7 @@ import express, { NextFunction, Request, Response } from 'express'
 import {
   getAmmApyAll,
   getPoolApyToday,
+  getPoolBalanceData,
   getPoolData
 } from '../controllers/apy.controller'
 import asyncMiddleware from '../utils/asyncMiddleware'
@@ -63,8 +64,12 @@ router.get(
   })
 )
 
+/**
+ * This endpoint is only for D1, so that the legacy backend can be fully deprecated
+ * It should be deprecated when D1 frontend is deprecated
+ */
 router.get(
-  '/pool-balance/:poolSymbol',
+  '/pool-balance/:pool',
   asyncMiddleware(async (req: Request, res: Response, next: NextFunction) => {
     try {
       req.log.info('handling pool balance request')
@@ -73,9 +78,8 @@ router.get(
         req.log.debug(errors.array(), 'handling message errors')
         throw new InputValidateError(errors.array())
       }
-      // const response = await getPoolApyToday(req.params.pool);
-      // res.send(response);
-      res.status(200).send('Placeholder')
+      const response = await getPoolBalanceData(req.params.pool)
+      res.status(200).send(response)
     } catch (error) {
       next(error)
     }
