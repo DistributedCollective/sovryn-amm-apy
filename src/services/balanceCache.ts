@@ -5,8 +5,12 @@ import abiERC20 from '../config/abi/ERC20BalanceOf.json'
 import { AbiItem } from 'web3-utils'
 import { bignumber, BigNumber } from 'mathjs'
 import { LiquidityPoolDataItem } from '../types/graphQueryResults'
+import { getQuery } from '../utils/apolloClient'
+import { currentBlock } from '../queries/currentBlock'
+import { getLiquidityPoolDataByBlock } from './helpers'
 
 export interface BalanceCacheItem {
+  ammPool: string
   contractBalanceToken: number
   stakedBalanceToken: number
   contractBalanceBtc: number
@@ -16,20 +20,32 @@ export interface BalanceCacheItem {
 }
 
 export class BalanceCache {
+  currentBlock: number
   balances: {
     [key: string]: BalanceCacheItem
   }
 
   constructor () {
     this.balances = {}
+    this.currentBlock = 0
+  }
+
+  async initialize (): Promise<void> {
+    const newBlock: number = await getQuery(currentBlock()).then(
+      (res) => res._meta.block.number
+    )
+    await getLiquidityPoolDataByBlock(newBlock)
   }
 
   async handleNewLiquidityPoolData (
     block: number,
     data: LiquidityPoolDataItem[]
   ): Promise<void> {
-    for (const pool of data) {
-      await this.updatePoolCache(block, pool)
+    if (block !== this.currentBlock) {
+      for (const pool of data) {
+        await this.updatePoolCache(block, pool)
+      }
+      this.currentBlock = block
     }
   }
 
@@ -41,8 +57,8 @@ export class BalanceCache {
     block: number,
     poolData: LiquidityPoolDataItem
   ): Promise<void> {
-    const tokenAddress = poolData.token0.id
-    const btcAddress = poolData.token1.id
+    const tokenAddress = poolData.token1.id
+    const btcAddress = poolData.token0.id
     const stakedBalanceToken =
       poolData.type === 2
         ? await this.getV2StakedBalance(poolData.id, tokenAddress, block)
@@ -53,15 +69,16 @@ export class BalanceCache {
         : await this.getV1StakedBalance(poolData.id, btcAddress, block)
 
     this.balances[poolData.id] = {
-      contractBalanceToken: Number(poolData.token0Balance),
-      contractBalanceBtc: Number(poolData.token1Balance),
+      ammPool: poolData.token1.symbol,
+      contractBalanceToken: Number(poolData.token1Balance),
+      contractBalanceBtc: Number(poolData.token0Balance),
       stakedBalanceToken: Number(stakedBalanceToken.toFixed(18)),
       stakedBalanceBtc: Number(stakedBalanceBtc.toFixed(18)),
       tokenDelta: Number(
-        bignumber(poolData.token0Balance).minus(stakedBalanceToken).toFixed(18)
+        bignumber(poolData.token1Balance).minus(stakedBalanceToken).toFixed(18)
       ),
       btcDelta: Number(
-        bignumber(poolData.token1Balance).minus(stakedBalanceBtc).toFixed(18)
+        bignumber(poolData.token0Balance).minus(stakedBalanceBtc).toFixed(18)
       )
     }
   }
@@ -105,4 +122,7 @@ export class BalanceCache {
   }
 }
 
-export default new BalanceCache()
+const balanceCache = new BalanceCache()
+balanceCache.initialize().catch((e) => console.log(e))
+
+export default balanceCache

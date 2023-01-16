@@ -133,7 +133,6 @@ export async function getPoolBalanceData (
   }
   const apyData = await getOnePoolApy(pool)
   return {
-    ammPool: pool,
     ...balanceData,
     yesterdayApy: apyData.map((item) => {
       return {

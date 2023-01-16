@@ -3,11 +3,9 @@ import { conversionFeesByBlock } from '../queries/conversionFees'
 import { getQuery } from '../utils/apolloClient'
 import {
   IGraphConversionFeeData,
-  ILiquidityPoolData,
   IAllocationPointData
 } from '../types/graphQueryResults'
 import { bignumber } from 'mathjs'
-import { liquidityPoolDataByBlock } from '../queries/liquidityPoolData'
 import { allocationPointsByBlock } from '../queries/allocationPoints'
 import { getBlockTimestamp } from '../utils/getBlockTimestamp'
 import { currentBlock } from '../queries/currentBlock'
@@ -16,9 +14,9 @@ import {
   getLastSavedBlock,
   createBlockRow
 } from '../models/apyBlock.model'
-import balanceCache from './balanceCache'
 import config from '../config/config'
 import log from '../logger'
+import { getLiquidityPoolDataByBlock } from './helpers'
 
 const logger = log.logger.child({ module: 'Apy Block Cronjob' })
 
@@ -120,20 +118,9 @@ async function getLiquidityPoolData (block: number): Promise<{
   rewardTokenAddress: string
   rewardTokenPrice: string
 }> {
-  const liquidityPoolData: ILiquidityPoolData = await getQuery(
-    liquidityPoolDataByBlock(block)
-  )
-  /**
-   * TODO: Refactor this whole function - it mutates and also returns an output which is not good
-   */
-  balanceCache
-    .handleNewLiquidityPoolData(block, liquidityPoolData.liquidityPools)
-    .catch((e) => {
-      logger.error(e)
-    })
+  const liquidityPoolData = await getLiquidityPoolDataByBlock(block)
 
-  const liquidityPools = liquidityPoolData.liquidityPools
-  const rewardsToken = liquidityPools.find(
+  const rewardsToken = liquidityPoolData.find(
     (item) => item.token1.symbol === 'SOV'
   )?.token1
   let rewardTokenAddress = ''
@@ -143,7 +130,7 @@ async function getLiquidityPoolData (block: number): Promise<{
     rewardTokenPrice = rewardsToken.lastPriceBtc
   }
   const output: LiquidityPoolData = {}
-  liquidityPools.forEach((item) => {
+  liquidityPoolData.forEach((item) => {
     if (item.type === 1) {
       const poolToken = item.smartToken.id
       const balanceBtc = bignumber(item.token0Balance)
