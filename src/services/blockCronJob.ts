@@ -3,12 +3,12 @@ import { conversionFeesByBlock } from '../queries/conversionFees'
 import { getQuery } from '../utils/apolloClient'
 import {
   IGraphConversionFeeData,
-  IAllocationPointData
+  IAllocationPointData,
+  LiquidityPoolDataItem
 } from '../types/graphQueryResults'
 import { bignumber } from 'mathjs'
 import { allocationPointsByBlock } from '../queries/allocationPoints'
 import { getBlockTimestamp } from '../utils/getBlockTimestamp'
-import { currentBlock } from '../queries/currentBlock'
 import {
   ILmApyBlock,
   getLastSavedBlock,
@@ -16,7 +16,8 @@ import {
 } from '../models/apyBlock.model'
 import config from '../config/config'
 import log from '../logger'
-import { getLiquidityPoolDataByBlock } from './helpers'
+import { getCurrentBlock, getLiquidityPoolDataByBlock } from './helpers'
+import balanceCache from './balanceCache'
 
 const logger = log.logger.child({ module: 'Apy Block Cronjob' })
 
@@ -65,11 +66,6 @@ export async function main (): Promise<void> {
   logger.debug('Loop finished', startBlock, endBlock, duration)
 }
 
-async function getCurrentBlock (): Promise<number> {
-  const data = await getQuery(currentBlock())
-  return data._meta.block.number
-}
-
 async function getDataForOneBlock (block: number): Promise<ILmApyBlock[]> {
   logger.info('Getting timestamp for block %s', [block])
   const blockTimestamp = await getBlockTimestamp(block)
@@ -113,12 +109,24 @@ interface LiquidityPoolData {
   }
 }
 
+async function getDataAndUpdateCache (
+  block: number
+): Promise<LiquidityPoolDataItem[]> {
+  const liquidityPoolData = await getLiquidityPoolDataByBlock(block)
+  balanceCache
+    .handleNewLiquidityPoolData(block, liquidityPoolData)
+    .catch((e) => {
+      logger.error(e)
+    })
+  return liquidityPoolData
+}
+
 async function getLiquidityPoolData (block: number): Promise<{
   liquidityPoolData: LiquidityPoolData
   rewardTokenAddress: string
   rewardTokenPrice: string
 }> {
-  const liquidityPoolData = await getLiquidityPoolDataByBlock(block)
+  const liquidityPoolData = await getDataAndUpdateCache(block)
 
   const rewardsToken = liquidityPoolData.find(
     (item) => item.token1.symbol === 'SOV'

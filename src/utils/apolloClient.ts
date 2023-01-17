@@ -31,7 +31,6 @@ const client = new ApolloClient({
   }
 })
 
-/** TODO: figure out how to properly type this */
 export const getQuery = async (query: DocumentNode): Promise<any> => {
   try {
     const res = await client.query({ query })

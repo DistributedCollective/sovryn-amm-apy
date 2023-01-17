@@ -5,9 +5,10 @@ import abiERC20 from '../config/abi/ERC20BalanceOf.json'
 import { AbiItem } from 'web3-utils'
 import { bignumber, BigNumber } from 'mathjs'
 import { LiquidityPoolDataItem } from '../types/graphQueryResults'
-import { getQuery } from '../utils/apolloClient'
-import { currentBlock } from '../queries/currentBlock'
-import { getLiquidityPoolDataByBlock } from './helpers'
+import { getCurrentBlock, getLiquidityPoolDataByBlock } from './helpers'
+import log from '../logger'
+
+const logger = log.logger.child({ module: 'Balance Cache' })
 
 export interface BalanceCacheItem {
   ammPool: string
@@ -30,11 +31,15 @@ export class BalanceCache {
     this.currentBlock = 0
   }
 
+  /**
+   * Only called when the service is restarted so that the cache is populated before the next block
+   */
   async initialize (): Promise<void> {
-    const newBlock: number = await getQuery(currentBlock()).then(
-      (res) => res._meta.block.number
-    )
-    await getLiquidityPoolDataByBlock(newBlock)
+    const newBlock = await getCurrentBlock()
+    logger.info('Initializing balance cache')
+    const data = await getLiquidityPoolDataByBlock(newBlock)
+    await this.handleNewLiquidityPoolData(newBlock, data)
+    logger.info('Balance cache initialized')
   }
 
   async handleNewLiquidityPoolData (
@@ -42,7 +47,7 @@ export class BalanceCache {
     data: LiquidityPoolDataItem[]
   ): Promise<void> {
     if (block !== this.currentBlock) {
-      for (const pool of data) {
+      for await (const pool of data) {
         await this.updatePoolCache(block, pool)
       }
       this.currentBlock = block
@@ -122,7 +127,4 @@ export class BalanceCache {
   }
 }
 
-const balanceCache = new BalanceCache()
-balanceCache.initialize().catch((e) => console.log(e))
-
-export default balanceCache
+export default new BalanceCache()
