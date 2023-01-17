@@ -70,6 +70,7 @@ router.get(
  */
 router.get(
   '/pool-balance/:pool',
+  checkBodyAndParams('pool').exists().isEthereumAddress(),
   asyncMiddleware(async (req: Request, res: Response, next: NextFunction) => {
     try {
       req.log.info('handling pool balance request')
