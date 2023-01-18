@@ -5,7 +5,10 @@ import abiERC20 from '../config/abi/ERC20BalanceOf.json'
 import { AbiItem } from 'web3-utils'
 import { bignumber, BigNumber } from 'mathjs'
 import { LiquidityPoolDataItem } from '../types/graphQueryResults'
-import { getCurrentBlock, getLiquidityPoolDataByBlock } from './helpers'
+import {
+  getCurrentBlock,
+  getLiquidityPoolDataByBlock
+} from './subgraphHelpers'
 import log from '../logger'
 
 const logger = log.logger.child({ module: 'Balance Cache' })

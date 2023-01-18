@@ -1,5 +1,5 @@
 /* eslint-env jest */
-import { getLiquidityPoolDataByBlock } from './helpers'
+import { getLiquidityPoolDataByBlock } from './subgraphHelpers'
 import balanceCache from './balanceCache'
 
 const mockHandleData = jest.spyOn(balanceCache, 'handleNewLiquidityPoolData')

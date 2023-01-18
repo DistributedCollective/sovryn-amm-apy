@@ -16,7 +16,10 @@ import {
 } from '../models/apyBlock.model'
 import config from '../config/config'
 import log from '../logger'
-import { getCurrentBlock, getLiquidityPoolDataByBlock } from './helpers'
+import {
+  getCurrentBlock,
+  getLiquidityPoolDataByBlock
+} from './subgraphHelpers'
 import balanceCache from './balanceCache'
 
 const logger = log.logger.child({ module: 'Apy Block Cronjob' })
@@ -109,6 +112,10 @@ interface LiquidityPoolData {
   }
 }
 
+/**
+ * This function is responsible for triggering the balance cache to update each time a new block is found,
+ * and passing the new liquidity pool data and balances for that block to the balance cache
+ */
 async function getDataAndUpdateCache (
   block: number
 ): Promise<LiquidityPoolDataItem[]> {

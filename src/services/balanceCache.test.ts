@@ -1,7 +1,7 @@
 /* eslint-env jest */
 import { bignumber } from 'mathjs'
 import { BalanceCache } from './balanceCache'
-import * as Helpers from '../services/helpers'
+import * as Helpers from './subgraphHelpers'
 
 const mockGetCurrentBlock = jest.spyOn(Helpers, 'getCurrentBlock')
 
