@@ -1,6 +1,6 @@
 import { createContract } from '../utils/contractHelper'
-import abiV1 from '../config/abi/GetBalanceV1.json'
-import abiV2 from '../config/abi/GetBalanceV2.json'
+import abiV1 from '../config/abi/LiquidityPoolV1Converter_Balance.json'
+import abiV2 from '../config/abi/LiquidityPoolV2Converter_Balance.json'
 import abiERC20 from '../config/abi/ERC20BalanceOf.json'
 import { AbiItem } from 'web3-utils'
 import { bignumber, BigNumber } from 'mathjs'
