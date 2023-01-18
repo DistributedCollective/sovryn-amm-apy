@@ -70,13 +70,13 @@ const config = convict({
     doc: 'Url for deployed subgraph',
     format: 'url',
     default:
-      'https://subgraph.test.sovryn.app/subgraphs/name/DistributedCollective/sovryn-subgraph',
+      'https://subgraph.sovryn.app/subgraphs/name/DistributedCollective/sovryn-subgraph',
     env: 'SUBGRAPH_URL'
   },
   RSKRpc: {
     doc: 'RSK node endpoint',
     format: 'url',
-    default: 'https://testnet.sovryn.app/rpc',
+    default: 'https://rsk-graph1.sovryn.app/rpc',
     env: 'RSK_RPC'
   },
   chunkSize: {
