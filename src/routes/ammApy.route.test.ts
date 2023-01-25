@@ -40,8 +40,7 @@ jest.mock('../models/apyDay.model.ts', () => ({
   })
 }))
 
-const alphabeticalSort = (a: string, b: string): number =>
-  a[0] > b[0] ? 1 : -1
+const alphabeticalSort = (a: string, b: string): number => (a > b ? 1 : -1)
 
 describe('GET /pool-balance/:pool', () => {
   afterEach(async () => {
