@@ -34,7 +34,7 @@
       "apollo-client": "^2.6.10",
       "apollo-link-http": "^1.5.17",
       "axios": "^0.21.4",
-      "class-validator": "^0.13.2",
+      "class-validator": "^0.14.0",
       "convict": "^6.2.3",
       "convict-format-with-validator": "^6.2.0",
       "cors": "^2.8.5",
