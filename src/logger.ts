@@ -10,7 +10,8 @@ if (appName !== '') isAppName = true
 export const logger = pino({
   name: isAppName ? appName : 'sovryn-amm-apy',
   level: logLevel,
-  prettyPrint: env === Environment.Development ? { colorize: true } : false
+  prettyPrint: env === Environment.Development ? { colorize: true } : false,
+  enabled: process.env.TEST !== 'true'
 })
 
 export default pinoHttp({

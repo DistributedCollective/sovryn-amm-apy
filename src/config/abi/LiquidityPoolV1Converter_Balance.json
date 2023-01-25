@@ -1,0 +1,40 @@
+[
+    {
+        "constant": true,
+        "inputs": [
+            {
+                "name": "_connectorToken",
+                "type": "address"
+            }
+        ],
+        "name": "getConnectorBalance",
+        "outputs": [
+            {
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [
+            {
+                "name": "_reserveToken",
+                "type": "address"
+            }
+        ],
+        "name": "reserveBalance",
+        "outputs": [
+            {
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    }
+]

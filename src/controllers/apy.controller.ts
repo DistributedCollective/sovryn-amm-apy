@@ -7,6 +7,9 @@ import { isNil } from 'lodash'
 import { ApyDay } from '../entity/ApyDay'
 import { bignumber } from 'mathjs'
 import config from '../config/config'
+import balanceCache from '../services/balanceCache'
+import { PoolBalanceResponse } from '../types/apiResponseData'
+import { HTTP404Error } from '../errorHandlers/baseError'
 
 const { defaultDataRange } = config
 
@@ -119,4 +122,25 @@ export async function getPoolData (
 export async function getPoolApyToday (pool: string): Promise<ApyDay[]> {
   const result = await getOnePoolApy(pool)
   return result
+}
+
+export async function getPoolBalanceData (
+  pool: string
+): Promise<PoolBalanceResponse> {
+  const balanceData = balanceCache.getPoolCache(pool)
+  if (balanceData === undefined) {
+    throw new HTTP404Error('Pool not found')
+  }
+  const apyData = await getOnePoolApy(pool)
+  return {
+    ...balanceData,
+    yesterdayApy: apyData.map((item) => {
+      return {
+        pool: item.pool,
+        pool_token: item.poolToken,
+        activity_date: item.date,
+        apy: item.totalApy
+      }
+    })
+  }
 }

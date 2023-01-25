@@ -3,14 +3,12 @@ import { conversionFeesByBlock } from '../queries/conversionFees'
 import { getQuery } from '../utils/apolloClient'
 import {
   IGraphConversionFeeData,
-  ILiquidityPoolData,
-  IAllocationPointData
+  IAllocationPointData,
+  LiquidityPoolDataItem
 } from '../types/graphQueryResults'
 import { bignumber } from 'mathjs'
-import { liquidityPoolDataByBlock } from '../queries/liquidityPoolData'
 import { allocationPointsByBlock } from '../queries/allocationPoints'
 import { getBlockTimestamp } from '../utils/getBlockTimestamp'
-import { currentBlock } from '../queries/currentBlock'
 import {
   ILmApyBlock,
   getLastSavedBlock,
@@ -18,6 +16,11 @@ import {
 } from '../models/apyBlock.model'
 import config from '../config/config'
 import log from '../logger'
+import {
+  getCurrentBlock,
+  getLiquidityPoolDataByBlock
+} from './subgraphHelpers'
+import balanceCache from './balanceCache'
 
 const logger = log.logger.child({ module: 'Apy Block Cronjob' })
 
@@ -66,11 +69,6 @@ export async function main (): Promise<void> {
   logger.debug('Loop finished', startBlock, endBlock, duration)
 }
 
-async function getCurrentBlock (): Promise<number> {
-  const data = await getQuery(currentBlock())
-  return data._meta.block.number
-}
-
 async function getDataForOneBlock (block: number): Promise<ILmApyBlock[]> {
   logger.info('Getting timestamp for block %s', [block])
   const blockTimestamp = await getBlockTimestamp(block)
@@ -114,16 +112,30 @@ interface LiquidityPoolData {
   }
 }
 
+/**
+ * This function is responsible for triggering the balance cache to update each time a new block is found,
+ * and passing the new liquidity pool data and balances for that block to the balance cache
+ */
+async function getDataAndUpdateCache (
+  block: number
+): Promise<LiquidityPoolDataItem[]> {
+  const liquidityPoolData = await getLiquidityPoolDataByBlock(block)
+  balanceCache
+    .handleNewLiquidityPoolData(block, liquidityPoolData)
+    .catch((e) => {
+      logger.error(e)
+    })
+  return liquidityPoolData
+}
+
 async function getLiquidityPoolData (block: number): Promise<{
   liquidityPoolData: LiquidityPoolData
   rewardTokenAddress: string
   rewardTokenPrice: string
 }> {
-  const liquidityPoolData: ILiquidityPoolData = await getQuery(
-    liquidityPoolDataByBlock(block)
-  )
-  const liquidityPools = liquidityPoolData.liquidityPools
-  const rewardsToken = liquidityPools.find(
+  const liquidityPoolData = await getDataAndUpdateCache(block)
+
+  const rewardsToken = liquidityPoolData.find(
     (item) => item.token1.symbol === 'SOV'
   )?.token1
   let rewardTokenAddress = ''
@@ -133,7 +145,7 @@ async function getLiquidityPoolData (block: number): Promise<{
     rewardTokenPrice = rewardsToken.lastPriceBtc
   }
   const output: LiquidityPoolData = {}
-  liquidityPools.forEach((item) => {
+  liquidityPoolData.forEach((item) => {
     if (item.type === 1) {
       const poolToken = item.smartToken.id
       const balanceBtc = bignumber(item.token0Balance)

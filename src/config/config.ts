@@ -7,7 +7,7 @@ convict.addFormats(convictFormatWithValidator)
 export enum Environment {
   Production = 'production',
   Development = 'development',
-  Test = 'test',
+  Test = 'test'
 }
 
 const config = convict({
@@ -74,7 +74,7 @@ const config = convict({
     env: 'SUBGRAPH_URL'
   },
   RSKRpc: {
-    doc: 'RSK mainnet endpoint',
+    doc: 'RSK node endpoint',
     format: 'url',
     default: 'https://rsk-graph1.sovryn.app/rpc',
     env: 'RSK_RPC'
