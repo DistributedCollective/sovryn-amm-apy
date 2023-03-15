@@ -30,7 +30,7 @@ export interface ILiquidityPoolData {
   liquidityPools: LiquidityPoolDataItem[]
 }
 
-interface LiquidityPoolDataItem {
+export interface LiquidityPoolDataItem {
   id: string
   type: number
   smartToken: {

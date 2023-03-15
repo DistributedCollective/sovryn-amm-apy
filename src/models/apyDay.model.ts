@@ -1,5 +1,5 @@
 import { ICalculatedDayData } from './apyBlock.model'
-import { getRepository, MoreThan, MoreThanOrEqual } from 'typeorm'
+import { getRepository, MoreThan } from 'typeorm'
 import { ApyDay } from '../entity'
 import { isNil } from 'lodash'
 import { HTTP404Error } from '../errorHandlers/baseError'
@@ -58,24 +58,27 @@ export async function getAllPoolData (days: number): Promise<ApyDay[]> {
   return result
 }
 
-/** This function first gets the max date in the apy day table, and then returns the apy for that pool on that day
- * Why doesn't it just return data for today? Because if a query is made around midnight but before the cron job has run, the api would return nothing
+/**
+ * Returns the most recent apy rows for this pool
+ * Why does it not use findOne? The V2 pools have a separate apy for each asset
+ * This is why the filtering occurs
  */
 export async function getOnePoolApy (pool: string): Promise<ApyDay[]> {
   const repository = getRepository(ApyDay)
-  const maxDate = await repository
-    .createQueryBuilder('date')
-    .select('MAX(date.date)', 'max')
-    .getRawOne()
   const result = await repository.find({
-    where: { pool: pool, date: MoreThanOrEqual(maxDate.max) },
-    select: ['pool', 'poolToken', 'date', 'rewardsApy', 'feeApy', 'totalApy']
+    where: { pool: pool },
+    select: ['pool', 'poolToken', 'date', 'rewardsApy', 'feeApy', 'totalApy'],
+    order: { date: 'DESC' },
+    take: 2
   })
-  if (result.length > 0) {
-    return result
-  } else {
+  if (result === undefined || result.length === 0) {
     throw new HTTP404Error('Pool address not found')
   }
+  /** Remove second row for V1 pools, keep for V2 pools */
+  const filteredResult = result.filter(
+    (item) => item.date.getUTCDay() === result[0].date.getUTCDay()
+  )
+  return filteredResult
 }
 
 export async function getOnePoolData (
