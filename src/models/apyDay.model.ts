@@ -43,7 +43,7 @@ export async function getAllPoolData (days: number): Promise<ApyDay[]> {
   date.setDate(date.getDate() - days)
   const repository = getRepository(ApyDay)
   const result = await repository.find({
-    where: { createdAt: MoreThan(date) },
+    where: { date: MoreThan(date) },
     select: [
       'pool',
       'poolToken',
