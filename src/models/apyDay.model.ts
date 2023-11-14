@@ -13,7 +13,7 @@ export async function saveApyDayRow (data: ICalculatedDayData): Promise<void> {
   newRow.feeApy = Number(data.fees_percent)
   newRow.rewardsApy = Number(data.rewards_percent)
   newRow.totalApy = Number(data.total_apy)
-  newRow.btcVolume = Number('0');
+  newRow.btcVolume = Number('0')
 
   /**
    * Find then update. Composite keys don't work well with upsert method
