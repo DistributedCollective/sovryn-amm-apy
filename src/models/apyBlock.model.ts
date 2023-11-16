@@ -87,6 +87,7 @@ export interface ICalculatedDayData {
   fees_percent: string
   rewards_percent: string
   total_apy: string
+  btcVolume: string
 }
 
 export interface IRawDayData {

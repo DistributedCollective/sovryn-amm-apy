@@ -10,8 +10,16 @@ import config from '../config/config'
 import balanceCache from '../services/balanceCache'
 import { PoolBalanceResponse } from '../types/apiResponseData'
 import { HTTP404Error } from '../errorHandlers/baseError'
+import { poolVolumeItems } from '../queries/poolVolumeItems'
+import { IPoolVolumeItems } from '../types/graphQueryResults'
+import { getQuery } from '../utils/apolloClient'
 
 const { defaultDataRange } = config
+
+export interface IPoolVolumeResult {
+  pool: string
+  btcVolume: string
+}
 
 interface IAmmApyAll {
   [key: string]: {
@@ -23,6 +31,7 @@ interface IAmmApyAll {
         APY_fees_pc: number
         APY_rewards_pc: number
         APY_pc: number
+        btc_volume: number
       }>
     }
     balanceHistory: BalanceHistory
@@ -73,7 +82,8 @@ function parseApyHistoryData (data: ApyDay[]): IAmmApyAll {
       activity_date: row.date,
       APY_fees_pc: row.feeApy,
       APY_rewards_pc: row.rewardsApy,
-      APY_pc: row.totalApy
+      APY_pc: row.totalApy,
+      btc_volume: row.btcVolume
     }
 
     if (!poolExists && !poolTokenExists) {
@@ -143,4 +153,37 @@ export async function getPoolBalanceData (
       }
     })
   }
+}
+
+export const getPoolVolumeItems = async (timestamp: string): Promise<IPoolVolumeResult[]> => {
+  const poolVolumeItemsData: IPoolVolumeItems = await getQuery(poolVolumeItems(timestamp))
+
+  const data = poolVolumeItemsData.poolVolumeItems
+
+  let result: IPoolVolumeResult[] = []
+
+  data.forEach((item) => {
+    const poolId = item.pool.id
+    const btcAmount = bignumber(item.btcAmount)
+
+    const poolInArray = result.find(item => item.pool === poolId)
+
+    if (poolInArray !== undefined) {
+      // If the poolId already exists, add to the existing sum
+      const updatedItem = { pool: poolInArray.pool, btcVolume: btcAmount.add(poolInArray.btcVolume).toFixed(18) }
+      const updatedArray = result.map(item => {
+        if (item.pool === updatedItem.pool) {
+          return updatedItem
+        }
+        return item
+      })
+
+      result = updatedArray
+    } else {
+      // If the poolId does not exist, create a new entry
+      result.push({ pool: poolId, btcVolume: btcAmount.toFixed(18) })
+    }
+  })
+
+  return result
 }
