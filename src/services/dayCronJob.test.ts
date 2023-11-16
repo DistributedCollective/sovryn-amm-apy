@@ -34,7 +34,7 @@ describe('Calculate Day APR', () => {
   it(
     'calculates correct day apr',
     () => {
-      const result = calculateDayApr(mockData1)
+      const result = calculateDayApr(mockData1, '0')
       expect(result.total_apy).toBe('22.39')
     },
     time
@@ -42,7 +42,7 @@ describe('Calculate Day APR', () => {
   it(
     'calculates correct day apr',
     () => {
-      const result = calculateDayApr(mockData2)
+      const result = calculateDayApr(mockData2, '0')
       expect(result.total_apy).toBe('220.17')
     },
     time
@@ -50,7 +50,7 @@ describe('Calculate Day APR', () => {
   it(
     'calculates correct day apr for SOV pool',
     () => {
-      const result = calculateDayApr(mockDataSOV)
+      const result = calculateDayApr(mockDataSOV, '0')
       expect(result.total_apy).toBe('29.18')
     },
     time
