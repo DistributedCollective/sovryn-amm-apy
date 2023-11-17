@@ -13,6 +13,7 @@ export async function saveApyDayRow (data: ICalculatedDayData): Promise<void> {
   newRow.feeApy = Number(data.fees_percent)
   newRow.rewardsApy = Number(data.rewards_percent)
   newRow.totalApy = Number(data.total_apy)
+  newRow.btcVolume = Number(data.btcVolume)
 
   /**
    * Find then update. Composite keys don't work well with upsert method
@@ -51,7 +52,8 @@ export async function getAllPoolData (days: number): Promise<ApyDay[]> {
       'balanceBtc',
       'rewardsApy',
       'feeApy',
-      'totalApy'
+      'totalApy',
+      'btcVolume'
     ],
     order: { date: 'ASC' }
   })
@@ -67,7 +69,7 @@ export async function getOnePoolApy (pool: string): Promise<ApyDay[]> {
   const repository = getRepository(ApyDay)
   const result = await repository.find({
     where: { pool: pool },
-    select: ['pool', 'poolToken', 'date', 'rewardsApy', 'feeApy', 'totalApy'],
+    select: ['pool', 'poolToken', 'date', 'rewardsApy', 'feeApy', 'totalApy', 'btcVolume'],
     order: { date: 'DESC' },
     take: 2
   })
@@ -97,7 +99,8 @@ export async function getOnePoolData (
       'balanceBtc',
       'rewardsApy',
       'feeApy',
-      'totalApy'
+      'totalApy',
+      'btcVolume'
     ],
     order: { date: 'ASC' }
   })

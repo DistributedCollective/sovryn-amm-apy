@@ -65,3 +65,16 @@ interface AllocationPointDataItem {
   allocationPoint: string
   rewardPerBlock: string
 }
+
+export interface IPoolVolumeItems {
+  poolVolumeItems: IPoolVolumeItem[]
+}
+
+export interface IPoolVolumeItem {
+  id: string
+  pool: {
+    id: string
+  }
+  btcAmount: string
+  timestamp: string
+}
