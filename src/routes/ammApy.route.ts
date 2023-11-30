@@ -69,7 +69,7 @@ router.get(
   asyncMiddleware(async (req: Request, res: Response, next: NextFunction) => {
     try {
       req.log.info('handling amm volume all request')
-      const response = await getAmmApyAll(60)
+      const response = await getAmmApyAll(90)
       res.send(response)
     } catch (error) {
       next(error)
@@ -88,7 +88,7 @@ router.get(
         req.log.debug(errors.array(), 'handling message errors')
         throw new InputValidateError(errors.array())
       }
-      const response = await getPoolData(req.params.pool, 60)
+      const response = await getPoolData(req.params.pool, 90)
       res.send(response)
     } catch (error) {
       next(error)
