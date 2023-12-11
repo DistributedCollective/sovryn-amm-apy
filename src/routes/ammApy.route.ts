@@ -64,6 +64,38 @@ router.get(
   })
 )
 
+router.get(
+  '/volume',
+  asyncMiddleware(async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      req.log.info('handling amm volume all request')
+      const response = await getAmmApyAll(90)
+      res.send(response)
+    } catch (error) {
+      next(error)
+    }
+  })
+)
+
+router.get(
+  '/volume/pool/:pool',
+  checkBodyAndParams('pool').exists().isEthereumAddress(),
+  asyncMiddleware(async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      req.log.info('handling amm volume pool request')
+      const errors = validationResult(req)
+      if (!errors.isEmpty()) {
+        req.log.debug(errors.array(), 'handling message errors')
+        throw new InputValidateError(errors.array())
+      }
+      const response = await getPoolData(req.params.pool, 90)
+      res.send(response)
+    } catch (error) {
+      next(error)
+    }
+  })
+)
+
 /**
  * This endpoint is only for D1, so that the legacy backend can be fully deprecated
  * It should be deprecated when D1 frontend is deprecated

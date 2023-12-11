@@ -33,4 +33,8 @@ export class ApyDay extends AbstractBaseEntity {
   @Column('decimal', { precision: 10, scale: 2 })
   @IsNumber({ allowNaN: false, allowInfinity: false, maxDecimalPlaces: 18 })
   totalApy!: number
+
+  @Column('decimal', { precision: 25, scale: 18, default: '0' })
+  @IsNumber({ allowNaN: false, allowInfinity: false, maxDecimalPlaces: 18 })
+  btcVolume!: number
 }

@@ -6,23 +6,32 @@ import {
 import { saveApyDayRow } from '../models/apyDay.model'
 import log from '../logger'
 import { bignumber } from 'mathjs'
+import { getPoolVolumeItems } from '../controllers/apy.controller'
 
 const logger = log.logger.child({ module: 'Apy Day Cronjob' })
 
 export async function main (): Promise<void> {
   const rawDayData = await getDailyAggregatedApy()
-  logger.debug(rawDayData)
+
+  const yesterdayTimestamp = Math.floor(
+    (new Date().getTime() - 24 * 60 * 60 * 1000) / 1000
+  ).toString()
+
+  const volumeData = await getPoolVolumeItems(yesterdayTimestamp)
+
+  // logger.debug(rawDayData)
+
   for (const row of rawDayData) {
     if (parseFloat(row.avg_balance) > 0) {
-      const calculatedDayData = calculateDayApr(row)
-      logger.debug(calculatedDayData)
+      const poolVolume = volumeData.find(item => item.pool === row.pool)?.btcVolume ?? '0'
+      const calculatedDayData = calculateDayApr(row, poolVolume)
       await saveApyDayRow(calculatedDayData)
     }
   }
   logger.info('All amm apy day data rows saved')
 }
 
-export function calculateDayApr (data: IRawDayData): ICalculatedDayData {
+export function calculateDayApr (data: IRawDayData, volume: string): ICalculatedDayData {
   const feeApy = bignumber(data.sum_fees)
     .div(bignumber(data.avg_balance))
     .mul(365 * 100)
@@ -43,6 +52,7 @@ export function calculateDayApr (data: IRawDayData): ICalculatedDayData {
     fees_percent: feeApy,
     rewards_percent: rewardsApy,
     total_apy: totalApy,
-    date: data.date
+    date: data.date,
+    btcVolume: volume
   }
 }
