@@ -25,7 +25,13 @@ spec:
       - image: sovryn/sovryn-amm-apy
         imagePullPolicy: Always
         name: sovryn-amm-apy
-        resources: {}
+        resources:
+          requests:
+            memory: "3072Mi"
+            cpu: "100m"
+          limits:
+            memory: "3072Mi"
+            cpu: "200m"
         terminationMessagePath: /dev/termination-log
         terminationMessagePolicy: File
         envFrom:
@@ -45,13 +51,10 @@ apiVersion: v1
 kind: Service
 metadata:
   name: sovryn-amm-apy
-  annotations:
-    service.beta.kubernetes.io/aws-load-balancer-backend-protocol: http
-    service.beta.kubernetes.io/aws-load-balancer-ssl-cert: arn:aws:acm:us-east-2:768438872063:certificate/9fa02b26-0ee5-4301-bdd6-8474344885ff
 spec:
   selector:
     app: sovryn-amm-apy
   ports:
     - port: 443
       targetPort: 3000
-  type: LoadBalancer
+  type: NodePort
