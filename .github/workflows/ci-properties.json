@@ -17,12 +17,14 @@
     "NODE_ENV": "test",
     "POSTGRES_DB": "sov-amm-apy-test",
     "RSK_RPC": "https://testnet.sovryn.app/rpc",
-    "SUBGRAPH_URL": "https://subgraph.test.sovryn.app/subgraphs/name/DistributedCollective/sovryn-subgraph"
+    "SUBGRAPH_URL": "https://subgraph.test.sovryn.app/subgraphs/name/DistributedCollective/sovryn-subgraph",
+    "INGRESS_HOSTNAME": "amm-apy.test.sovryn.app"
   },
   "PROD_ENV_VARS": {
     "NODE_ENV": "production",
     "POSTGRES_DB": "sov-amm-apy-main",
     "RSK_RPC": "https://rsk-internal.sovryn.app/rpc",
-    "SUBGRAPH_URL": "https://subgraph.sovryn.app/subgraphs/name/DistributedCollective/sovryn-subgraph"
+    "SUBGRAPH_URL": "https://subgraph.sovryn.app/subgraphs/name/DistributedCollective/sovryn-subgraph",
+    "INGRESS_HOSTNAME": "amm-apy.sovryn.app"
   }
 }

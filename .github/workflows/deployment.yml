@@ -7,7 +7,7 @@ on:
 
 jobs:
   call-workflow-init:
-   uses: DistributedCollective/.github/.github/workflows/init.yml@ci_envs
+   uses: DistributedCollective/.github/.github/workflows/init.yml@master
    with:
      ref: ${{ github.ref }}
      base_ref: ${{ github.base_ref }}
@@ -26,7 +26,7 @@ jobs:
   call-workflow-k8s-deploy:
     needs: [call-workflow-init, call-workflow-docker-build]
     if: github.event_name != 'pull_request'
-    uses: DistributedCollective/.github/.github/workflows/deploy-k8s.yml@ci_envs # in case additional secrets is needed, this file must be changed and pushed to your repository
+    uses: DistributedCollective/.github/.github/workflows/deploy-k8s.yml@master # in case additional secrets is needed, this file must be changed and pushed to your repository
     with:
       IMAGE_NAME: ${{ needs.call-workflow-init.outputs.image_name }}
       KUBE_NAMESPACE: ${{ needs.call-workflow-init.outputs.KUBE_NAMESPACE }}
